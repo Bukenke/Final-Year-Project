@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html class="light" lang="en">
+<head>
+    <meta charset="utf-8"/>
+    <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+    <title>Register Farm | AgriFeed Pro</title>
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;600;700;800&amp;family=Work+Sans:wght@400;500;600&amp;family=JetBrains+Mono:wght@600&amp;display=swap" rel="stylesheet"/>
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+    
+    <script id="tailwind-config">
+        tailwind.config = {
+          darkMode: "class",
+          theme: {
+            extend: {
+              "colors": {
+                      "secondary": "#984806",
+                      "surface-cream": "#fafaf9",
+                      "secondary-fixed": "#ffdbc9",
+                      "on-error-container": "#93000a",
+                      "surface-container-high": "#dee9fc",
+                      "on-primary-container": "#abffc6",
+                      "outline-variant": "#bec9be",
+                      "on-tertiary": "#ffffff",
+                      "on-primary": "#ffffff",
+                      "surface-container-highest": "#d9e3f6",
+                      "surface-variant": "#d9e3f6",
+                      "on-tertiary-container": "#def3d2",
+                      "surface-dim": "#d0dbed",
+                      "on-tertiary-fixed-variant": "#3a4b34",
+                      "on-surface-variant": "#3f4941",
+                      "error-container": "#ffdad6",
+                      "on-secondary": "#ffffff",
+                      "harvest-amber": "#f59e0b",
+                      "on-secondary-container": "#703100",
+                      "tertiary-container": "#5e7056",
+                      "error": "#ba1a1a",
+                      "surface-container-low": "#eff4ff",
+                      "background": "#f8f9ff",
+                      "surface-container": "#e6eeff",
+                      "surface-tint": "#006d3f",
+                      "surface": "#f8f9ff",
+                      "tertiary-fixed-dim": "#b8cdad",
+                      "tertiary-fixed": "#d4e9c8",
+                      "primary": "#006036",
+                      "inverse-primary": "#80d9a0",
+                      "on-secondary-fixed-variant": "#753400",
+                      "tertiary": "#46583f",
+                      "outline": "#6f7a70",
+                      "secondary-fixed-dim": "#ffb68b",
+                      "on-error": "#ffffff",
+                      "inverse-on-surface": "#eaf1ff",
+                      "on-tertiary-fixed": "#0f1f0b",
+                      "inverse-surface": "#27313f",
+                      "water-sky": "#0ea5e9",
+                      "on-primary-fixed": "#00210f",
+                      "primary-fixed": "#9bf6ba",
+                      "surface-container-lowest": "#ffffff",
+                      "leaf-success": "#1a7a4a",
+                      "earth-gray": "#6b7280",
+                      "surface-bright": "#f8f9ff",
+                      "alert-clay": "#b91c1c",
+                      "on-secondary-fixed": "#321200",
+                      "secondary-container": "#fe9754",
+                      "on-primary-fixed-variant": "#00522e",
+                      "on-background": "#121c2a",
+                      "on-surface": "#121c2a",
+                      "primary-container": "#1a7a4a",
+                      "primary-fixed-dim": "#80d9a0"
+              },
+              "borderRadius": {
+                      "DEFAULT": "0.125rem",
+                      "lg": "0.25rem",
+                      "xl": "0.5rem",
+                      "full": "0.75rem"
+              },
+              "spacing": {
+                      "stack-gap": "12px",
+                      "base": "4px",
+                      "gutter": "16px",
+                      "card-padding": "20px",
+                      "margin-mobile": "16px",
+                      "margin-desktop": "32px"
+              },
+              "fontFamily": {
+                      "headline-md": ["Manrope"],
+                      "eyebrow": ["Work Sans"],
+                      "stat-value": ["Manrope"],
+                      "label-caps": ["JetBrains Mono"],
+                      "body-md": ["Work Sans"],
+                      "headline-lg": ["Manrope"],
+                      "headline-lg-mobile": ["Manrope"],
+                      "body-sm": ["Work Sans"]
+              },
+              "fontSize": {
+                      "headline-md": ["20px", {"lineHeight": "28px", "fontWeight": "600"}],
+                      "eyebrow": ["13px", {"lineHeight": "18px", "letterSpacing": "0.03em", "fontWeight": "600"}],
+                      "stat-value": ["28px", {"lineHeight": "32px", "fontWeight": "800"}],
+                      "label-caps": ["12px", {"lineHeight": "16px", "letterSpacing": "0.05em", "fontWeight": "600"}],
+                      "body-md": ["16px", {"lineHeight": "24px", "fontWeight": "400"}],
+                      "headline-lg": ["32px", {"lineHeight": "40px", "letterSpacing": "-0.02em", "fontWeight": "700"}],
+                      "headline-lg-mobile": ["24px", {"lineHeight": "32px", "fontWeight": "700"}],
+                      "body-sm": ["14px", {"lineHeight": "20px", "fontWeight": "400"}]
+              }
+            },
+          },
+        }
+    </script>
+    <link rel="stylesheet" href="/static/login.css"/>
+</head>
+<body class="font-body-md text-on-surface bg-surface-cream">
+
+    <div class="min-h-screen flex flex-col md:flex-row">
+        
+        <!-- Left Side: Cover Section -->
+        <div class="md:w-1/2 bg-primary text-on-primary flex flex-col justify-between p-12 md:p-24 relative overflow-hidden">
+            <!-- Background effects -->
+            <div class="absolute -top-24 -left-24 w-96 h-96 bg-primary-fixed opacity-10 rounded-full blur-3xl"></div>
+            <div class="absolute -bottom-24 -right-24 w-96 h-96 bg-harvest-amber opacity-10 rounded-full blur-3xl"></div>
+
+            <div class="z-10 flex items-center gap-2 cursor-pointer" onclick="window.location.href='/'">
+                <span class="material-symbols-outlined text-3xl text-on-primary">agriculture</span>
+                <span class="font-headline-md text-headline-md font-bold">AgriFeed Pro</span>
+            </div>
+
+            <div class="z-10 my-auto py-12 max-w-lg space-y-6">
+                <h1 class="font-headline-lg text-headline-lg leading-tight">
+                    Start Managing Your Flock Intelligently Today.
+                </h1>
+                <p class="text-body-md opacity-90">
+                    Create an account to log feed, configure machine learning weight estimations, predict potential flock mortalities, and minimize overall farm overhead.
+                </p>
+                
+                <!-- Graphic Card -->
+                <div class="glass-effect rounded-2xl p-6 shadow-xl border border-white/20 mt-8">
+                    <div class="flex items-center gap-4 text-on-background">
+                        <div class="w-12 h-12 rounded-full bg-harvest-amber flex items-center justify-center">
+                            <span class="material-symbols-outlined text-white">calculate</span>
+                        </div>
+                        <div>
+                            <p class="font-label-caps text-label-caps text-on-primary/75 uppercase">Optimization Rations</p>
+                            <p class="text-lg font-bold text-white">Save Up to 15% in Annual Feed Costs</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="z-10 text-xs opacity-75">
+                © 2024 AGRIFEED PRO. DESIGNED FOR PRECISION.
+            </div>
+        </div>
+
+        <!-- Right Side: Registration Form -->
+        <div class="md:w-1/2 flex items-center justify-center p-8 bg-surface-cream">
+            <div class="w-full max-w-md space-y-8 bg-surface-container-lowest p-8 md:p-12 rounded-2xl border border-outline-variant shadow-xl">
+                <div>
+                    <h2 class="font-headline-lg-mobile md:font-headline-md text-headline-lg-mobile md:text-headline-md text-primary font-bold">Register Farm</h2>
+                    <p class="text-body-sm text-on-surface-variant mt-2">Fill in the fields below to register your farm profile.</p>
+                </div>
+
+                <!-- Error / Success Alert -->
+                <div id="authAlert" class="hidden p-4 rounded-lg text-sm flex items-center gap-3">
+                    <span id="authAlertIcon" class="material-symbols-outlined text-lg"></span>
+                    <span id="authAlertText"></span>
+                </div>
+
+                <form id="registerForm" class="space-y-4">
+                    <div>
+                        <label class="block text-sm font-bold text-on-background mb-1">Full Name</label>
+                        <input type="text" id="registerName" required class="w-full px-4 py-2.5 rounded-lg border border-outline-variant bg-surface-cream focus:outline-none focus:border-primary text-on-background transition-colors" placeholder="John Doe">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-bold text-on-background mb-1">Email Address</label>
+                        <input type="email" id="registerEmail" required class="w-full px-4 py-2.5 rounded-lg border border-outline-variant bg-surface-cream focus:outline-none focus:border-primary text-on-background transition-colors" placeholder="farmer@example.com">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-bold text-on-background mb-1">Farm Name</label>
+                        <input type="text" id="registerFarm" required class="w-full px-4 py-2.5 rounded-lg border border-outline-variant bg-surface-cream focus:outline-none focus:border-primary text-on-background transition-colors" placeholder="Ikorodu Farm">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-bold text-on-background mb-1">Password</label>
+                        <input type="password" id="registerPassword" required class="w-full px-4 py-2.5 rounded-lg border border-outline-variant bg-surface-cream focus:outline-none focus:border-primary text-on-background transition-colors" placeholder="Min. 6 characters">
+                    </div>
+                    
+                    <button type="submit" class="w-full bg-primary text-on-primary py-3.5 rounded-xl font-bold hover:opacity-90 active:scale-[0.98] transition-all mt-4">
+                        Register Account
+                    </button>
+                </form>
+
+                <div class="text-center pt-4 border-t border-outline-variant">
+                    <p class="text-body-sm text-on-surface-variant">
+                        Already have an account? 
+                        <a href="login.html" class="text-primary font-bold hover:underline ml-1">Sign In</a>
+                    </p>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <script src="/static/login.js" defer></script>
+</body>
+</html>

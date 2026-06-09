@@ -1,0 +1,27 @@
+/* Styles for AgriFeed Pro Landing & Authentication Pages */
+
+.material-symbols-outlined {
+    font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+}
+
+body {
+    background-color: #fafaf9;
+}
+
+.glass-effect {
+    background: rgba(255, 255, 255, 0.65);
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.25);
+}
+
+/* Scroll Animation Transitions for Landing Page */
+section {
+    opacity: 0;
+    transform: translateY(20px);
+    transition: opacity 0.8s ease-out, transform 0.8s ease-out;
+}
+
+section.animate-in {
+    opacity: 1;
+    transform: translateY(0);
+}

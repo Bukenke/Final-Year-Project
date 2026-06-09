@@ -1,0 +1,66 @@
+{
+  "weight_model": {
+    "rmse": 54.5314,
+    "mae": 40.5187,
+    "r2": 0.994,
+    "cv_r2_mean": 0.9908,
+    "cv_r2_std": 0.0018,
+    "feature_importances": {
+      "cumulative_feed_g": 0.9541,
+      "breed_enc": 0.0301,
+      "water_intake_ml": 0.0049,
+      "day": 0.0043,
+      "temperature_c": 0.0016,
+      "humidity_pct": 0.0016,
+      "feed_intake_g": 0.0012,
+      "flock_size": 0.0009,
+      "season_enc": 0.0008,
+      "health_status_enc": 0.0004,
+      "phase_enc": 0.0
+    },
+    "train_size": 1680,
+    "test_size": 420
+  },
+  "mortality_model": {
+    "accuracy": 0.8095,
+    "at_risk_precision": 0.4603,
+    "at_risk_recall": 0.3867,
+    "at_risk_f1": 0.4203,
+    "train_size": 1680,
+    "oversampled_train_size": 2067,
+    "test_size": 420,
+    "class_counts": {
+      "0": 1723,
+      "1": 377
+    },
+    "oversampled_class_counts": {
+      "0": 1378,
+      "1": 689
+    }
+  },
+  "weight_features": [
+    "day",
+    "breed_enc",
+    "phase_enc",
+    "season_enc",
+    "health_status_enc",
+    "flock_size",
+    "temperature_c",
+    "humidity_pct",
+    "feed_intake_g",
+    "water_intake_ml",
+    "cumulative_feed_g"
+  ],
+  "mort_features": [
+    "day",
+    "breed_enc",
+    "phase_enc",
+    "season_enc",
+    "health_status_enc",
+    "temperature_c",
+    "humidity_pct",
+    "feed_intake_g",
+    "body_weight_g",
+    "fcr"
+  ]
+}

@@ -1,0 +1,1060 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#00522e">
+<meta name="description" content="Simple poultry feed advice for local farmers">
+<title>Poultry Feed Manager</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@600&family=Manrope:wght@400;600;700;800&family=Work+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/static/styles.css">
+</head>
+<body>
+
+<div class="app-shell">
+  <div class="sidebar-overlay" onclick="toggleSidebar()"></div>
+
+  <aside class="sidebar" aria-label="Main navigation">
+    <button type="button" class="sidebar-close-btn" onclick="toggleSidebar()" aria-label="Close Sidebar">&times;</button>
+    <div class="sidebar-brand">
+      <span class="logo" aria-hidden="true">🐔</span>
+      <div>
+        <h2>Feed Manager</h2>
+        <p>Made for local farmers</p>
+      </div>
+    </div>
+    <div class="sidebar-nav" role="tablist">
+      <button type="button" class="nav-btn active" data-page="dashboard" onclick="showPage('dashboard', this)">
+        <span class="nav-icon" aria-hidden="true">📊</span> Dashboard
+      </button>
+      <button type="button" class="nav-btn" data-page="predict" onclick="showPage('predict', this)">
+        <span class="nav-icon" aria-hidden="true">🌾</span> Feed plan
+      </button>
+      <button type="button" class="nav-btn" data-page="flock" onclick="showPage('flock', this)">
+        <span class="nav-icon" aria-hidden="true">📋</span> My pens
+      </button>
+      <button type="button" class="nav-btn" data-page="records" onclick="showPage('records', this)">
+        <span class="nav-icon" aria-hidden="true">📒</span> Logs &amp; History
+      </button>
+      <button type="button" class="nav-btn" data-page="mlpredict" onclick="showPage('mlpredict', this)">
+        <span class="nav-icon" aria-hidden="true">🔮</span> Growth Predictor
+      </button>
+      <button type="button" class="nav-btn" data-page="analytics" onclick="showPage('analytics', this)">
+        <span class="nav-icon" aria-hidden="true">📈</span> Analytics
+      </button>
+      <button type="button" class="nav-btn" onclick="handleLogout()" style="margin-top: auto; color: #ff8b8b;">
+        <span class="nav-icon" aria-hidden="true">🚪</span> Sign Out
+      </button>
+    </div>
+    <p class="sidebar-footer">Check feed stock each morning. On hot days, feed early and late.</p>
+  </aside>
+  
+  <div class="main-wrap">
+    <header class="topbar">
+      <button type="button" class="hamburger-btn" onclick="toggleSidebar()" aria-label="Toggle Sidebar Menu">
+        <span class="material-symbols-outlined">menu</span>
+      </button>
+      <div class="topbar-brand">
+        <div class="topbar-title" id="topbar-title">AgriFeed Pro</div>
+        <div class="topbar-sub" id="topbar-sub">Ikorodu Farm</div>
+      </div>
+      <nav class="topbar-nav" aria-label="Desktop navigation">
+        <button type="button" class="nav-btn active" data-page="dashboard" onclick="showPage('dashboard', this)">Dashboard</button>
+        <button type="button" class="nav-btn" data-page="predict" onclick="showPage('predict', this)">Feed Plan</button>
+        <button type="button" class="nav-btn" data-page="flock" onclick="showPage('flock', this)">My Pens</button>
+        <button type="button" class="nav-btn" data-page="records" onclick="showPage('records', this)">Logs &amp; History</button>
+        <button type="button" class="nav-btn" data-page="mlpredict" onclick="showPage('mlpredict', this)">Growth Predictor</button>
+        <button type="button" class="nav-btn" data-page="analytics" aria-label="Analytics page" onclick="showPage('analytics', this)">Analytics</button>
+      </nav>
+      <div class="topbar-actions">
+        <button type="button" class="icon-btn" aria-label="Notifications"><span class="material-symbols-outlined">notifications</span></button>
+        <button type="button" class="icon-btn" aria-label="Weather"><span class="material-symbols-outlined">cloud</span></button>
+        <button type="button" class="icon-btn" aria-label="Sign Out" title="Sign Out" onclick="handleLogout()"><span class="material-symbols-outlined" style="color: var(--danger);">logout</span></button>
+      </div>
+      <button type="button" class="btn btn-primary btn-sm topbar-cta" onclick="goFeedPlan()">+ New feed plan</button>
+    </header>
+
+    <main class="main-content">
+
+<!-- DASHBOARD -->
+<div id="page-dashboard" class="page active">
+  <section class="dashboard-hero">
+    <div>
+      <span class="page-eyebrow">Active Site</span>
+      <h1>My Farm</h1>
+      <p id="farm-date-line">Loading date... Lagos</p>
+    </div>
+    <div class="hero-actions">
+      <button type="button" class="btn btn-secondary btn-sm" onclick="alert('Exporting PDF Report to downloads...')"><span class="material-symbols-outlined">download</span> Export Report</button>
+      <button type="button" class="btn btn-primary btn-sm" onclick="goRecords()"><span class="material-symbols-outlined">add</span> Log Daily Record</button>
+    </div>
+  </section>
+
+  <!-- Detailed Dashboard Stats Cards -->
+  <section class="dashboard-stats" style="display:grid;grid-template-columns:repeat(auto-fit, minmax(240px, 1fr));gap:1rem;margin-bottom:1.5rem">
+    <div class="stat-card pro-stat">
+      <p class="stat-label">Total Birds</p>
+      <div class="stat-value">12,450</div>
+      <div class="stat-footer" style="font-size:12px;color:var(--text-sec);margin-top:8px">
+        <span>Active Layers:</span> <strong style="color:var(--primary)">9,200</strong> · Broilers: <strong style="color:var(--accent)">3,250</strong>
+      </div>
+    </div>
+    <div class="stat-card pro-stat">
+      <p class="stat-label">Feed Used Today</p>
+      <div class="stat-value" style="color:var(--primary)">1,840<span style="font-size:1rem;font-weight:600;margin-left:4px">kg</span></div>
+      <div class="mini-progress" style="background:#e8dfd0;border-radius:6px;height:8px;width:100%;margin-top:8px;position:relative">
+        <span style="width:75%;background:var(--primary);height:100%;display:block;border-radius:6px"></span>
+      </div>
+      <div class="stat-note" style="font-size:12px;color:var(--text-muted);margin-top:4px">75% of projected 2,450kg</div>
+    </div>
+    <div class="stat-card pro-stat">
+      <p class="stat-label">Feed Conversion Ratio (FCR)</p>
+      <div class="stat-value" style="color:var(--accent)">1.62</div>
+      <div class="stat-footer" style="font-size:12px;color:var(--text-sec);margin-top:8px">
+        <span>Flock FCR Target:</span> <strong style="color:var(--primary)">1.55</strong>
+      </div>
+    </div>
+    <div class="stat-card pro-stat danger-stat" style="border-left-color:var(--danger)">
+      <p class="stat-label">Mortality Rate (Last 7d)</p>
+      <div class="stat-value" style="color:var(--danger)">0.08%</div>
+      <div class="stat-footer" style="font-size:12px;color:var(--text-sec);margin-top:8px">
+        <span>Deaths today:</span> <strong style="color:var(--danger)">10</strong>
+      </div>
+    </div>
+  </section>
+
+  <!-- Bento Grid: Interactive Modules, Alerts, and Beautiful SVG charts -->
+  <section class="dashboard-grid" style="display:grid;grid-template-columns:1fr;gap:1.5rem;margin-bottom:1.5rem">
+    
+    <!-- Row 1: Aesthetics Chart + Active Weather Station -->
+    <div style="display:grid;grid-template-columns:1fr;gap:1.5rem" class="md:grid-cols-3">
+      
+      <!-- Interactive Local Weather forecaster box + AgTech Alerts -->
+      <div class="card weather-card md:col-span-3" style="background:linear-gradient(135deg, var(--surface) 0%, var(--primary-soft) 100%);border-radius:var(--radius);padding:1.5rem;box-shadow:var(--shadow-soft);border:1px solid #cce8d6">
+        <div class="card-title" style="border-bottom:none;margin-bottom:8px">Lagos Weather Station</div>
+        <p style="font-size:12px;color:var(--text-sec);margin-bottom:1.5rem">Real-time agricultural weather forecaster & alerts.</p>
+        
+        <div style="display:grid;grid-template-columns:1fr;gap:1.5rem" class="md:grid-cols-3">
+          <!-- Current Stats -->
+          <div style="display:flex;flex-direction:column;justify-content:center;background:var(--surface);padding:1rem;border-radius:var(--radius-sm);border:1px solid var(--border-soft)">
+            <div style="display:flex;align-items:center;gap:12px">
+              <span class="material-symbols-outlined" style="font-size:48px;color:var(--accent-bright)">wb_sunny</span>
+              <div>
+                <span style="font-size:32px;font-weight:800;line-height:1">36&deg;C</span>
+                <p style="font-size:12px;color:var(--text-muted);font-weight:700">HUMIDITY: 78%</p>
+              </div>
+            </div>
+            <div style="margin-top:10px">
+              <span class="badge badge-warn" style="background:#fef3c7;color:#b45309;font-weight:800">HEAT INDEX HIGH</span>
+            </div>
+          </div>
+          
+          <!-- Heat stress alerts -->
+          <div class="weather-alert" style="background:rgba(217,119,6,0.1);border-left:4px solid var(--accent);border-radius:8px;padding:12px;font-size:12px;color:var(--warn);display:flex;flex-direction:column;justify-content:center">
+            <div style="display:flex;align-items:center;gap:6px;font-weight:800;margin-bottom:4px">
+              <span class="material-symbols-outlined" style="font-size:16px">warning</span>
+              HEAT STRESS WARNING
+            </div>
+            Temps exceeding 35&deg;C expected between 11 AM - 3 PM. **Action required:** Restrict feeding during peak heat to prevent respiratory failure. Supplement water with Vitamin C.
+          </div>
+          
+          <!-- Outlook -->
+          <div style="display:flex;flex-direction:column;justify-content:center">
+            <div style="font-size:11px;font-weight:700;color:var(--text-muted);margin-bottom:8px;text-align:center">3-DAY WEATHER OUTLOOK</div>
+            <div style="display:grid;grid-template-columns:repeat(3, 1fr);gap:8px;text-align:center">
+              <div style="background:rgba(255,255,255,0.5);border-radius:10px;padding:8px">
+                <p style="font-size:10px;font-weight:700;color:var(--text-muted)">TOMORROW</p>
+                <span class="material-symbols-outlined" style="font-size:20px;color:var(--accent-bright)">wb_sunny</span>
+                <p style="font-size:12px;font-weight:800">35&deg;C</p>
+              </div>
+              <div style="background:rgba(255,255,255,0.5);border-radius:10px;padding:8px">
+                <p style="font-size:10px;font-weight:700;color:var(--text-muted)">THU</p>
+                <span class="material-symbols-outlined" style="font-size:20px;color:var(--accent-bright)">partly_sunny</span>
+                <p style="font-size:12px;font-weight:800">34&deg;C</p>
+              </div>
+              <div style="background:rgba(255,255,255,0.5);border-radius:10px;padding:8px">
+                <p style="font-size:10px;font-weight:700;color:var(--text-muted)">FRI</p>
+                <span class="material-symbols-outlined" style="font-size:20px;color:var(--sky)">rainy</span>
+                <p style="font-size:12px;font-weight:800">31&deg;C</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+    </div>
+
+    <!-- Row 2: Nutrition Decision Sandbox ( empowers farmers with hard decisions ) -->
+    <div class="card sandbox-card" style="background:var(--surface);border-radius:var(--radius);padding:1.5rem;box-shadow:var(--shadow-soft);border:2px solid var(--primary-soft)">
+      <div style="display:flex;justify-content:between;align-items:center;margin-bottom:12px">
+        <div class="card-title" style="margin-bottom:0;border-bottom:none">Active Nutrition Sandbox & Decision Maker</div>
+        <span class="badge badge-green" style="font-weight:800">Empowered Decision Override</span>
+      </div>
+      <p style="font-size:13px;color:var(--text-muted);margin-bottom:20px">Adjust ingredient ratios dynamically below. Test different formulations to override standard ML calculations and finalize feed choices.</p>
+      
+      <div style="display:grid;grid-template-columns:1fr;gap:1.5rem" class="md:grid-cols-3">
+        <!-- Ratios knobs -->
+        <div class="space-y-4 md:col-span-2" style="background:var(--surface-muted);padding:1.25rem;border-radius:var(--radius-sm);border:1px solid var(--border-soft)">
+          <div style="display:flex;justify-content:between">
+            <label style="font-size:12px;font-weight:800;color:var(--text-sec)">Maize (Energy base) - <span id="maizeVal">56%</span></label>
+          </div>
+          <input type="range" min="40" max="70" value="56" class="w-full accent-primary" id="maizeRange" oninput="updateOverrideSim()">
+          
+          <div style="display:flex;justify-content:between">
+            <label style="font-size:12px;font-weight:800;color:var(--text-sec)">Soybean Meal (Protein base) - <span id="soyVal">26%</span></label>
+          </div>
+          <input type="range" min="15" max="38" value="26" class="w-full accent-primary" id="soyRange" oninput="updateOverrideSim()">
+          
+          <div style="display:flex;justify-content:between">
+            <label style="font-size:12px;font-weight:800;color:var(--text-sec)">Fish Meal (Animal protein boost) - <span id="fishVal">6%</span></label>
+          </div>
+          <input type="range" min="2" max="15" value="6" class="w-full accent-primary" id="fishRange" oninput="updateOverrideSim()">
+        </div>
+        
+        <!-- Live projection results -->
+        <div style="background:linear-gradient(135deg, var(--surface) 0%, var(--accent-soft) 100%);border-radius:var(--radius-sm);padding:1.25rem;border:1px dashed var(--accent);display:flex;flex-direction:column;justify-content:center">
+          <p style="font-size:11px;font-weight:800;color:var(--text-muted);text-transform:uppercase">Projected Sandbox Impact</p>
+          
+          <div style="margin-top:12px">
+            <p style="font-size:12px;color:var(--text-sec)">Average Bird Weight (W4 Target):</p>
+            <p style="font-size:24px;font-weight:800;color:var(--primary)" id="simWeight">1,120 g</p>
+          </div>
+          
+          <div style="margin-top:8px">
+            <p style="font-size:12px;color:var(--text-sec)">Estimated Daily Feed Cost (12.4k birds):</p>
+            <p style="font-size:20px;font-weight:800;color:var(--accent)" id="simCost">₦828,000</p>
+          </div>
+          
+          <button type="button" class="btn btn-primary btn-sm w-full" style="margin-top:16px" onclick="lockNutritionDecision()">
+            <span class="material-symbols-outlined">gavel</span> Lock Nutrition Decision
+          </button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Pen performance (Clickable Navigation) & Feed in Store & Vaccine Countdown -->
+  <section class="grid3">
+    <!-- Clickable Pen Performance card that goes to Pens page on click -->
+    <div class="card data-card hover:border-primary transition-all duration-200" onclick="showPage('flock')" style="cursor:pointer;position:relative" title="Click to open My Pens page">
+      <div style="display:flex;justify-content:between;align-items:center;margin-bottom:8px">
+        <div class="card-title" style="margin-bottom:0;border-bottom:none">Pen Performance</div>
+        <span class="material-symbols-outlined" style="color:var(--primary);font-size:20px">open_in_new</span>
+      </div>
+      <p style="font-size:12px;color:var(--text-muted);margin-bottom:12px">Average pen weights. Click anywhere on this card to manage all pens.</p>
+      
+      <div class="tbl-wrap">
+        <table>
+          <thead>
+            <tr><th>Pen ID</th><th>Birds</th><th>Age</th><th>Health</th><th>Trend</th></tr>
+          </thead>
+          <tbody>
+            <tr><td><strong>PEN-A</strong></td><td>600</td><td>28 days</td><td><span class="badge badge-green">Optimal</span></td><td><span class="material-symbols-outlined trend-up" style="color:var(--success)">trending_up</span></td></tr>
+            <tr><td><strong>PEN-B</strong></td><td>620</td><td>28 days</td><td><span class="badge badge-warn">Alert</span></td><td><span class="material-symbols-outlined trend-flat" style="color:var(--warn)">trending_flat</span></td></tr>
+            <tr><td><strong>PEN-D</strong></td><td>600</td><td>42 days</td><td><span class="badge badge-danger">Behind</span></td><td><span class="material-symbols-outlined trend-down" style="color:var(--danger)">trending_down</span></td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+    
+    <!-- Feed store quantity card -->
+    <div class="card data-card" id="stock-card">
+      <div class="card-title">Feed in Store</div>
+      <div class="tbl-wrap">
+        <table>
+          <thead>
+            <tr><th>Feed Type</th><th>Quantity</th><th>Status</th><th>Next Refill</th></tr>
+          </thead>
+          <tbody>
+            <tr><td><strong>Starter Crumbles</strong></td><td>1,200kg</td><td><span class="badge badge-green">Full</span></td><td>28 May</td></tr>
+            <tr><td><strong>Grower Mash</strong></td><td>450kg</td><td><span class="badge badge-warn">Low</span></td><td><strong style="color:var(--danger)">Today</strong></td></tr>
+            <tr><td><strong>Finisher Pellets</strong></td><td>850kg</td><td><span class="badge badge-green">Full</span></td><td>30 May</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- Vaccine Countdown & Alerts Card -->
+    <div class="card data-card" id="vaccine-card">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px">
+        <div class="card-title" style="margin-bottom:0;border-bottom:none">Vaccine Countdown</div>
+        <span class="material-symbols-outlined" style="color:var(--accent);font-size:20px">vaccines</span>
+      </div>
+      <p style="font-size:12px;color:var(--text-muted);margin-bottom:12px">Upcoming schedules. Click "Administer" to log.</p>
+      <div id="vaccine-list-container" class="tbl-wrap" style="max-height: 160px; overflow-y: auto;">
+        <div style="font-size:11px;color:var(--text-muted);text-align:center;padding:24px;">Loading vaccine schedules...</div>
+      </div>
+    </div>
+  </section>
+  
+  <!-- Upcoming Collaboration Alert banner (Health feature block teaser) -->
+  <section class="health-teaser" style="margin-top:1.5rem;background:linear-gradient(135deg, var(--surface) 0%, var(--danger-soft) 100%);border-radius:var(--radius);padding:1.25rem;border:1px solid #ffd8c9;box-shadow:var(--shadow-soft);display:flex;align-items:center;gap:1rem">
+    <span class="material-symbols-outlined text-[40px]" style="color:var(--danger)">local_hospital</span>
+    <div>
+      <span class="page-eyebrow" style="background:#ffdad6;color:var(--danger);font-size:10px">Upcoming Collaboration</span>
+      <h3 style="font-weight:800;color:var(--primary-strong)">Flock Diagnostics & Advanced Health Monitor</h3>
+      <p style="font-size:13px;color:var(--text-sec);margin-top:2px">We'll discuss adding advanced biometric alerts, vaccination countdown schedules, and ML illness prediction models soon. Stay tuned!</p>
+    </div>
+  </section>
+</div>
+<!-- FEED PLAN -->
+<div id="page-predict" class="page">
+  <section class="feed-hero">
+    <div>
+      <span class="page-eyebrow">Feed Optimization</span>
+      <h1>Feed Optimization Plan</h1>
+      <p>Precision nutrition calculation based on flock profile, environment, available ingredients, and your trained local model.</p>
+    </div>
+  </section>
+
+  <div class="stepper" aria-label="Feed plan steps">
+    <div class="step-pill active"><span>1</span> Bird Profile</div>
+    <div class="step-line"></div>
+    <div class="step-pill active"><span>2</span> Environmental Factors</div>
+    <div class="step-line"></div>
+    <div class="step-pill"><span class="material-symbols-outlined">analytics</span> Results</div>
+  </div>
+
+  <section class="feed-layout">
+    <div class="feed-main">
+      <div class="card card-step pro-form-card">
+        <span class="card-step-num">1</span>
+        <div class="card-title">Define Flock Characteristics</div>
+        <div class="stack">
+          <!-- Direct Pen Link Selector -->
+          <div class="field" style="margin-bottom: 8px;">
+            <label style="color: var(--primary); font-weight: 800;">Target Pen Selection</label>
+            <select id="p-pen-select" onchange="loadPenIntoFeedPlan(this.value)" style="border-color: var(--primary); font-weight: 700; background: var(--primary-soft);">
+              <option value="">-- Select Pen to Autofill Profile --</option>
+              <option value="Pen A">Pen A (600 Cobb 500, 28 days)</option>
+              <option value="Pen B">Pen B (620 Ross 308, 28 days)</option>
+              <option value="Pen C">Pen C (580 Marshall, 35 days)</option>
+              <option value="Pen D">Pen D (600 Noiler, 42 days)</option>
+            </select>
+            <span style="font-size: 11px; color: var(--text-muted);">Tying calculations to a pen updates its specific FCR predictions and logs history to that pen.</span>
+          </div>
+          <div class="grid2">
+            <div class="field"><label>Breed / strain</label>
+              <select id="p-breed">
+                <option>Marshall (broiler)</option>
+                <option>Ross 308 (broiler)</option>
+                <option>Cobb 500 (broiler)</option>
+                <option>Isa Brown (layer)</option>
+                <option>Lohmann Brown (layer)</option>
+                <option>Nigerian Local (broiler)</option>
+                <option>Noiler (dual purpose)</option>
+              </select>
+            </div>
+            <div class="field"><label>Production type</label>
+              <select id="p-type">
+                <option>Broiler (meat)</option>
+                <option>Layer (egg)</option>
+                <option>Dual purpose</option>
+              </select>
+            </div>
+          </div>
+          <div class="grid2">
+            <div class="field"><label>Age (days)</label><input type="number" id="p-age" value="28" min="1" max="120"></div>
+            <div class="field"><label>Flock count</label><input type="number" id="p-count" value="500" min="1"></div>
+          </div>
+          <div class="grid2">
+            <div class="field"><label>Average weight (grams)</label><input type="number" id="p-weight" value="1100" min="30"></div>
+            <div class="field"><label>Overall health status</label>
+              <select id="p-health">
+                <option>Healthy</option>
+                <option>Recovering from illness</option>
+                <option>Low appetite</option>
+                <option>After vaccination</option>
+              </select>
+            </div>
+          </div>
+          <div class="field"><label>Growth stage</label>
+            <select id="p-phase">
+              <option>Starter (0-14 days)</option>
+              <option>Grower (15-28 days)</option>
+              <option>Finisher (29-42 days)</option>
+              <option>Layer - Pre-lay</option>
+              <option>Layer - Peak lay</option>
+            </select>
+          </div>
+        </div>
+      </div>
+
+      <div class="card card-step pro-form-card">
+        <span class="card-step-num">2</span>
+        <div class="card-title">External Variables</div>
+        <div class="stack">
+          <div class="grid2">
+            <div class="field"><label>Pen temperature (C)</label><input type="number" id="p-temp" value="35" min="15" max="45"></div>
+            <div class="field"><label>Humidity (%)</label><input type="number" id="p-humidity" value="70" min="20" max="100"></div>
+          </div>
+          <div class="field"><label>Current season</label>
+            <select id="p-season">
+              <option>Dry / Harmattan</option>
+              <option>Early rainy season</option>
+              <option>Peak rainy season</option>
+              <option>Late rainy season</option>
+            </select>
+          </div>
+          <div class="field"><label>Available ingredients</label>
+            <select id="p-feeds" multiple>
+              <option selected>Maize (whole grain)</option>
+              <option selected>Soybean meal</option>
+              <option>Fish meal</option>
+              <option>Wheat offal / bran</option>
+              <option>Palm kernel cake</option>
+              <option>Groundnut cake</option>
+              <option>Blood meal</option>
+              <option>Limestone / Calcium</option>
+              <option selected>Vitamin premix</option>
+              <option>Methionine supplement</option>
+            </select>
+            <div class="api-note">Hold Ctrl on Windows or Command on Mac to select more than one.</div>
+          </div>
+          <div class="field"><label>What you notice today</label>
+            <textarea id="p-obs" placeholder="e.g. Birds look tired or eat less than usual."></textarea>
+          </div>
+        </div>
+      </div>
+
+      <button type="button" class="btn btn-primary btn-full calculate-btn" onclick="getAdvice()">
+        <span class="material-symbols-outlined">auto_awesome</span> Calculate ration
+      </button>
+    </div>
+
+    <aside class="feed-aside">
+      <div class="info-panel primary-panel">
+        <span class="material-symbols-outlined">info</span>
+        <h3>Why this matters</h3>
+        <p>Age, weight, health, temperature, and humidity change feed intake and mortality risk. Your local Random Forest model uses these values to tailor the plan.</p>
+      </div>
+      <div class="info-panel amber-panel">
+        <span class="material-symbols-outlined">thermostat</span>
+        <h3>Metabolic heat</h3>
+        <p>High temperatures reduce appetite. The plan adjusts timing and daily ration to reduce stress and protect growth.</p>
+      </div>
+    </aside>
+  </section>
+
+  <div class="loading" id="pred-loading">
+    <div class="spinner"></div>
+    <div style="color:var(--text-sec);font-weight:700">Preparing your plan...</div>
+  </div>
+
+  <section id="pred-result" class="results-panel">
+    <div class="result-header">
+      <span class="page-eyebrow">Results</span>
+      <h2>Recommended Plan</h2>
+    </div>
+    <div class="grid3 results-grid">
+      <div class="card result-card">
+        <div class="card-title"><span class="material-symbols-outlined">lightbulb</span> Management Tips</div>
+        <div id="res-tips"></div>
+      </div>
+      <div class="card result-card">
+        <div class="card-title"><span class="material-symbols-outlined">restaurant_menu</span> Today's Ration</div>
+        <div id="res-ration"></div>
+        <hr class="divider">
+        <div id="res-herd"></div>
+      </div>
+      <div class="card result-card">
+        <div class="card-title"><span class="material-symbols-outlined">calendar_clock</span> Feeding Schedule</div>
+        <div id="res-schedule" class="schedule-grid"></div>
+      </div>
+    </div>
+    <div class="card hidden" id="res-alert-card">
+      <div class="card-title"><span class="material-symbols-outlined">warning</span> Needs Attention</div>
+      <div id="res-alert"></div>
+    </div>
+    <div class="actions-end">
+      <button type="button" class="btn btn-secondary btn-sm" onclick="saveRecord()"><span class="material-symbols-outlined">save</span> Save this plan</button>
+    </div>
+  </section>
+</div>
+<!-- PENS -->
+<div id="page-flock" class="page">
+  <div class="page-header">
+    <span class="page-eyebrow">Your flocks</span>
+    <h1>My pens</h1>
+    <p>Add each pen — birds, breed, and how they are growing.</p>
+  </div>
+
+  <div class="toolbar">
+    <button type="button" class="btn btn-primary btn-sm" onclick="showAddPen()">+ Add new pen</button>
+  </div>
+
+  <div id="add-pen-form" class="card hidden">
+    <div class="card-title">Add new pen</div>
+    <div class="grid3 mb-lg">
+      <div class="field"><label>Pen name</label><input type="text" id="new-pen-name" placeholder="e.g. Pen E"></div>
+      <div class="field"><label>Number of birds</label><input type="number" id="new-pen-count" placeholder="500"></div>
+      <div class="field"><label>Breed</label><input type="text" id="new-pen-breed" placeholder="e.g. Ross 308"></div>
+    </div>
+    <div class="grid3 mb-lg">
+      <div class="field"><label>Age (days)</label><input type="number" id="new-pen-age" placeholder="1"></div>
+      <div class="field"><label>Batch date</label><input type="date" id="new-pen-date"></div>
+      <div class="field"><label>Target weight (g)</label><input type="number" id="new-pen-target" placeholder="2200"></div>
+    </div>
+    <div style="display:flex;gap:8px;flex-wrap:wrap">
+      <button type="button" class="btn btn-primary btn-sm" onclick="addPen()">Save pen</button>
+      <button type="button" class="btn btn-secondary btn-sm" onclick="toggleHidden('add-pen-form')">Cancel</button>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-title">All active pens</div>
+    <p style="font-size: 13px; color: var(--text-muted); margin-bottom: 12px;">Click on any pen row below to adjust its parameters, update weights, or calculate a customized feeding plan.</p>
+    <div class="tbl-wrap">
+      <table>
+        <thead><tr><th>Pen</th><th>Birds</th><th>Breed</th><th>Age</th><th>Weight</th><th>FCR</th><th>Deaths</th><th>Goal</th><th>Status</th></tr></thead>
+        <tbody id="pen-tbody">
+          <tr onclick="openEditPenModal('Pen A', 600, 'Cobb 500', 28, 2200, 1120, '1.72', '1.2%')" style="cursor: pointer;" class="hover:bg-primary-soft/30 transition-colors"><td>Pen A</td><td>600</td><td>Cobb 500</td><td>28 d</td><td>1,120 g</td><td>1.72</td><td>1.2%</td><td>2,200 g</td><td><span class="badge badge-green">On track</span></td></tr>
+          <tr onclick="openEditPenModal('Pen B', 620, 'Ross 308', 28, 2200, 1080, '1.88', '1.5%')" style="cursor: pointer;" class="hover:bg-primary-soft/30 transition-colors"><td>Pen B</td><td>620</td><td>Ross 308</td><td>28 d</td><td>1,080 g</td><td>1.88</td><td>1.5%</td><td>2,200 g</td><td><span class="badge badge-warn">Watch</span></td></tr>
+          <tr onclick="openEditPenModal('Pen C', 580, 'Marshall', 35, 2200, 1140, '1.70', '0.9%')" style="cursor: pointer;" class="hover:bg-primary-soft/30 transition-colors"><td>Pen C</td><td>580</td><td>Marshall</td><td>35 d</td><td>1,140 g</td><td>1.70</td><td>0.9%</td><td>2,200 g</td><td><span class="badge badge-green">On track</span></td></tr>
+          <tr onclick="openEditPenModal('Pen D', 600, 'Noiler', 42, 2000, 1010, '2.04', '2.1%')" style="cursor: pointer;" class="hover:bg-primary-soft/30 transition-colors"><td>Pen D</td><td>600</td><td>Noiler</td><td>42 d</td><td>1,010 g</td><td>2.04</td><td>2.1%</td><td>2,000 g</td><td><span class="badge badge-danger">Behind</span></td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- Float Modal: Edit Pen Details -->
+  <div id="edit-pen-modal" class="card hidden" style="border: 2px solid var(--primary); background: var(--surface);">
+    <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid var(--border-soft); padding-bottom: 8px; margin-bottom: 16px;">
+      <h3 id="edit-pen-title" style="font-weight: 800; color: var(--primary-strong);">Edit Pen Details</h3>
+      <button type="button" onclick="closeEditPenModal()" class="icon-btn" style="border: none; background: transparent; cursor: pointer;"><span class="material-symbols-outlined">close</span></button>
+    </div>
+    
+    <input type="hidden" id="edit-pen-original-name">
+    
+    <div class="grid3 mb-lg">
+      <div class="field"><label>Pen name</label><input type="text" id="edit-pen-name"></div>
+      <div class="field"><label>Number of birds</label><input type="number" id="edit-pen-count"></div>
+      <div class="field"><label>Breed</label><input type="text" id="edit-pen-breed"></div>
+    </div>
+    <div class="grid3 mb-lg">
+      <div class="field"><label>Age (days)</label><input type="number" id="edit-pen-age"></div>
+      <div class="field"><label>Current Weight (grams)</label><input type="number" id="edit-pen-weight"></div>
+      <div class="field"><label>Target weight (g)</label><input type="number" id="edit-pen-target"></div>
+    </div>
+    
+    <div style="display:flex;gap:12px;flex-wrap:wrap;align-items:center;margin-top:16px">
+      <button type="button" class="btn btn-primary btn-sm" onclick="savePenEdits()">Save changes</button>
+      <button type="button" class="btn btn-secondary btn-sm" style="border-color: var(--primary); color: var(--primary);" onclick="calculateFeedForActivePen()">
+        <span class="material-symbols-outlined">auto_awesome</span> Calculate Pen Feed Plan
+      </button>
+      <button type="button" class="btn btn-secondary btn-sm" onclick="closeEditPenModal()">Cancel</button>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-title">Growth: target vs actual</div>
+    <div class="grid2">
+      <div class="progress-item">
+        <div class="progress-label">Pen A — Week 4</div>
+        <div class="progress-meta">Target 1,200 g · Actual 1,120 g (93%)</div>
+        <div class="progress-wrap"><div class="progress-bar amber" style="width:93%"></div></div>
+      </div>
+      <div class="progress-item">
+        <div class="progress-label">Pen B — Week 4</div>
+        <div class="progress-meta">Target 1,200 g · Actual 1,080 g (90%)</div>
+        <div class="progress-wrap"><div class="progress-bar amber" style="width:90%"></div></div>
+      </div>
+      <div class="progress-item">
+        <div class="progress-label">Pen C — Week 5</div>
+        <div class="progress-meta">Target 1,500 g · Actual 1,140 g (76%)</div>
+        <div class="progress-wrap"><div class="progress-bar red" style="width:76%"></div></div>
+      </div>
+      <div class="progress-item">
+        <div class="progress-label">Pen D — Week 6</div>
+        <div class="progress-meta">Target 1,800 g · Actual 1,010 g (56%)</div>
+        <div class="progress-wrap"><div class="progress-bar red" style="width:56%"></div></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- LOGS & HISTORY -->
+<div id="page-records" class="page">
+  <div class="page-header">
+    <span class="page-eyebrow">Flock Management</span>
+    <h1>Logs &amp; History</h1>
+    <p>Submit daily performance logs, view optimization plan history, and record custom notes.</p>
+  </div>
+
+  <!-- Row 1: Daily Logging Form & Live Metrics Calculator (Stacked side-by-side) -->
+  <div class="grid3" style="align-items: start; gap: 1.5rem; margin-bottom: 2rem;">
+    <!-- Form Card -->
+    <div class="card md:col-span-2" style="background: var(--surface); padding: 1.5rem; border-radius: var(--radius);">
+      <div class="card-title">New Daily Performance Record</div>
+      
+      <!-- Live validation feedback panel -->
+      <div id="log-validation-alert" class="alert alert-danger hidden" style="margin-bottom: 1rem; padding: 10px 14px; border-radius: 8px;">
+        <div class="alert-icon">!</div>
+        <div id="log-validation-msg" style="font-size: 13px; font-weight: 600;">Please resolve errors below.</div>
+      </div>
+
+      <form id="daily-log-form" onsubmit="event.preventDefault(); submitDailyLog();">
+        <div class="grid3 mb-lg">
+          <div class="field">
+            <label>Select Pen *</label>
+            <select id="log-pen-select" required onchange="onLogPenChange()">
+              <option value="Pen A">Pen A (Cobb 500)</option>
+              <option value="Pen B">Pen B (Ross 308)</option>
+              <option value="Pen C">Pen C (Marshall)</option>
+              <option value="Pen D">Pen D (Noiler)</option>
+            </select>
+          </div>
+          <div class="field">
+            <label>Log Date *</label>
+            <input type="date" id="log-date" required>
+          </div>
+          <div class="field">
+            <label>Average Weight (grams) *</label>
+            <input type="number" id="log-weight" placeholder="e.g. 1120" min="1" required oninput="validateLogInputs()">
+          </div>
+        </div>
+
+        <div class="grid2 mb-lg">
+          <div class="field">
+            <label>Feed Consumed (kg) *</label>
+            <input type="number" step="0.01" id="log-feed-kg" placeholder="e.g. 55.4" min="0" required oninput="validateLogInputs()">
+          </div>
+          <div class="field">
+            <label>Total Water Given Today (Litres) *</label>
+            <input type="number" id="log-water-l" step="0.1" placeholder="e.g. 132" min="0" required oninput="validateLogInputs()">
+          </div>
+        </div>
+
+        <div class="grid3 mb-lg">
+          <div class="field">
+            <label>Mortality (Deaths today) *</label>
+            <input type="number" id="log-deaths" placeholder="0" min="0" value="0" required oninput="validateLogInputs()">
+          </div>
+          <div class="field">
+            <label>Pen Temperature (C) *</label>
+            <input type="number" id="log-temp" placeholder="30" min="10" max="50" required oninput="validateLogInputs()">
+          </div>
+          <div class="field">
+            <label>Humidity (%) *</label>
+            <input type="number" id="log-humidity" placeholder="70" min="10" max="100" required oninput="validateLogInputs()">
+          </div>
+        </div>
+
+        <div class="field mb-lg">
+          <label>Farmer's Observations / Notes</label>
+          <input type="text" id="log-notes" placeholder="e.g. Active feeding, normal respiratory sounds.">
+        </div>
+
+        <div style="display:flex;gap:8px;flex-wrap:wrap">
+          <button type="submit" class="btn btn-primary btn-sm">Save Daily Record</button>
+          <button type="button" class="btn btn-secondary btn-sm" onclick="resetLoggingForm()">Reset Form</button>
+        </div>
+      </form>
+    </div>
+
+    <!-- Live metrics card -->
+    <div class="card md:col-span-1" style="background: var(--surface); padding: 1.5rem; border-radius: var(--radius); border-top: 5px solid var(--accent);">
+      <div class="card-title">Live Metrics Calculator</div>
+      <p style="font-size: 12px; color: var(--text-sec); margin-bottom: 1.5rem;">Computed instantaneously from your current form inputs.</p>
+      
+      <div class="stack" style="gap: 1.25rem;">
+        <div style="background: var(--primary-soft); padding: 1rem; border-radius: var(--radius-sm); border: 1px solid var(--border-soft);">
+          <div style="font-size: 11px; font-weight: 700; color: var(--primary); text-transform: uppercase;">Live Daily FCR</div>
+          <div style="font-size: 24px; font-weight: 800; color: var(--primary-strong); margin: 4px 0;" id="live-fcr">&mdash;</div>
+          <div id="live-fcr-status" style="font-size: 11px; color: var(--text-sec);">Enter weight & feed values.</div>
+        </div>
+
+        <div style="background: var(--accent-soft); padding: 1rem; border-radius: var(--radius-sm); border: 1px solid var(--border-soft);">
+          <div style="font-size: 11px; font-weight: 700; color: var(--accent); text-transform: uppercase;">Water / Feed Ratio</div>
+          <div style="font-size: 24px; font-weight: 800; color: var(--accent-strong); margin: 4px 0;" id="live-water-feed">&mdash;</div>
+          <div id="live-water-status" style="font-size: 11px; color: var(--text-sec);">Ideal range is 2.0 - 2.5</div>
+        </div>
+
+        <div style="background: var(--surface-muted); padding: 1rem; border-radius: var(--radius-sm); border: 1px solid var(--border-soft);">
+          <div style="font-size: 11px; font-weight: 700; color: var(--text-muted); text-transform: uppercase;">Daily Mortality Rate</div>
+          <div style="font-size: 24px; font-weight: 800; color: var(--text-muted); margin: 4px 0;" id="live-mort-pct">0.00%</div>
+          <div id="live-mort-status" style="font-size: 11px; color: var(--text-sec);">Healthy</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Row 2: Double table layout -->
+  <div style="display: grid; grid-template-columns: 1fr; gap: 1.5rem;" class="md:grid-cols-2">
+    <!-- Left Column: Daily Performance Logs History Table -->
+    <div class="card" style="background: var(--surface); padding: 1.5rem; border-radius: var(--radius);">
+      <div class="card-title">Daily Performance History</div>
+      <p style="font-size: 12px; color: var(--text-muted); margin-bottom: 1.25rem;">Recent performance logs recorded on the farm.</p>
+      <div class="tbl-wrap" style="max-height: 400px; overflow-y: auto;">
+        <table>
+          <thead>
+            <tr>
+              <th>Date</th>
+              <th>Pen</th>
+              <th>Feed</th>
+              <th>Water</th>
+              <th>Weight</th>
+              <th>Deaths</th>
+              <th>Env.</th>
+            </tr>
+          </thead>
+          <tbody id="logs-tbody">
+            <!-- Populated dynamically via javascript -->
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- Right Column: Saved Feed Plans & Notes -->
+    <div class="card" style="background: var(--surface); padding: 1.5rem; border-radius: var(--radius);">
+      <div class="card-title">Feed Optimization History &amp; Notes</div>
+      <p style="font-size: 12px; color: var(--text-muted); margin-bottom: 1.25rem;">Saved system calculations and custom farmer notes.</p>
+      <div class="toolbar-between" style="margin-bottom: 1rem;">
+        <div class="tabs inline">
+          <button type="button" class="tab active" onclick="filterRecords('all',this)">All</button>
+          <button type="button" class="tab" onclick="filterRecords('ai',this)">System</button>
+          <button type="button" class="tab" onclick="filterRecords('manual',this)">Notes</button>
+        </div>
+        <button type="button" class="btn btn-secondary btn-sm" onclick="addManualRecord()">+ Add Note</button>
+      </div>
+      <div class="tbl-wrap" style="max-height: 400px; overflow-y: auto;">
+        <table>
+          <thead>
+            <tr>
+              <th>Date</th>
+              <th>Pen</th>
+              <th>Birds</th>
+              <th>Feed Plan / Note</th>
+              <th>Total</th>
+              <th>Temp</th>
+              <th>Type</th>
+            </tr>
+          </thead>
+          <tbody id="records-tbody">
+            <!-- Populated dynamically via javascript -->
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- Manual note popup/drawer card (hidden by default) -->
+  <div id="manual-form" class="card hidden" style="margin-top: 1.5rem;">
+    <div class="card-title">Add a Feeding Note</div>
+    <div class="grid3 mb-lg">
+      <div class="field"><label>Date</label><input type="date" id="m-date"></div>
+      <div class="field"><label>Pen</label>
+        <select id="m-pen"><option>Pen A</option><option>Pen B</option><option>Pen C</option><option>Pen D</option></select>
+      </div>
+      <div class="field"><label>Number of birds</label><input type="number" id="m-birds" placeholder="600"></div>
+    </div>
+    <div class="grid2 mb-lg">
+      <div class="field"><label>What you fed</label><input type="text" id="m-feed" placeholder="e.g. Grower mash"></div>
+      <div class="field"><label>Total feed (kg)</label><input type="number" id="m-kg" placeholder="72"></div>
+    </div>
+    <div class="grid2 mb-lg">
+      <div class="field"><label>Temperature (&deg;C)</label><input type="number" id="m-temp" placeholder="35"></div>
+      <div class="field"><label>Notes</label><input type="text" id="m-notes" placeholder="Anything to remember"></div>
+    </div>
+    <div style="display:flex;gap:8px;flex-wrap:wrap">
+      <button type="button" class="btn btn-primary btn-sm" onclick="saveManual()">Save Note</button>
+      <button type="button" class="btn btn-secondary btn-sm" onclick="toggleHidden('manual-form')">Cancel</button>
+    </div>
+  </div>
+</div>
+
+<!-- ANALYTICS PAGE -->
+<div id="page-analytics" class="page">
+  <div class="page-header">
+    <span class="page-eyebrow">Visual Analytics</span>
+    <h1>Analytics &amp; Risk Insights</h1>
+    <p>View real-time feed-to-growth trends, FCR metrics, cumulative profitability, and algorithmic risk warnings.</p>
+  </div>
+
+  <div class="toolbar-between" style="margin-bottom: 1.5rem;">
+    <div class="field" style="margin-bottom: 0; min-width: 200px;">
+      <label style="font-weight: 700;">Filter Analytics by Pen</label>
+      <select id="log-pen-select" onchange="renderAnalyticsCharts()" style="font-weight: 700;">
+        <option value="Pen A">Pen A (Cobb 500)</option>
+        <option value="Pen B">Pen B (Ross 308)</option>
+        <option value="Pen C">Pen C (Marshall)</option>
+        <option value="Pen D">Pen D (Noiler)</option>
+      </select>
+    </div>
+  </div>
+
+  <div class="grid2" style="gap: 1.5rem; margin-bottom: 1.5rem;">
+    <!-- Chart 1: Growth vs Feed consumption -->
+    <div class="card" style="background: var(--surface); padding: 1.5rem; border-radius: var(--radius);">
+      <div class="card-title">Growth vs Daily Feed Intake</div>
+      <p style="font-size: 12px; color: var(--text-muted); margin-bottom: 1rem;">Tracks average bird weight (g) and total feed consumed (kg) over the grow-out cycle.</p>
+      <div class="chart-area" style="position: relative; height: 260px; width: 100%;">
+        <svg id="chart-growth-feed" viewBox="0 0 500 200" class="w-full h-full" style="overflow: visible;">
+          <!-- Painted by scripts.js -->
+        </svg>
+      </div>
+      <div style="display:flex; justify-content:center; gap:1.5rem; font-size:11px; font-weight:700; margin-top:0.75rem;">
+        <span style="color:var(--primary); display:flex; align-items:center; gap:4px;"><span style="display:inline-block; width:10px; height:3px; background:var(--primary);"></span> Avg Weight (g)</span>
+        <span style="color:var(--accent); display:flex; align-items:center; gap:4px;"><span style="display:inline-block; width:10px; height:3px; background:var(--accent); border-bottom:1px dashed var(--accent);"></span> Daily Feed (kg)</span>
+      </div>
+    </div>
+
+    <!-- Chart 2: Cumulative Profitability Trend -->
+    <div class="card" style="background: var(--surface); padding: 1.5rem; border-radius: var(--radius);">
+      <div class="card-title">Cumulative Financial Sandbox</div>
+      <p style="font-size: 12px; color: var(--text-muted); margin-bottom: 1rem;">Compares cumulative feed cost (&#8358;750/kg) against estimated flock market valuation (&#8358;1,800/kg).</p>
+      <div class="chart-area" style="position: relative; height: 260px; width: 100%;">
+        <svg id="chart-profitability" viewBox="0 0 500 200" class="w-full h-full" style="overflow: visible;">
+          <!-- Painted by scripts.js -->
+        </svg>
+      </div>
+      <div style="display:flex; justify-content:center; gap:1.5rem; font-size:11px; font-weight:700; margin-top:0.75rem;">
+        <span style="color:var(--success); display:flex; align-items:center; gap:4px;"><span style="display:inline-block; width:10px; height:10px; background:rgba(21,128,61,0.2); border:1px solid var(--success);"></span> Flock Value</span>
+        <span style="color:var(--danger); display:flex; align-items:center; gap:4px;"><span style="display:inline-block; width:10px; height:10px; background:rgba(194,65,12,0.15); border:1px solid var(--danger);"></span> Feed Cost</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="grid2" style="gap: 1.5rem; margin-bottom: 1.5rem;">
+    <!-- Chart 3: FCR Efficiency Curve -->
+    <div class="card" style="background: var(--surface); padding: 1.5rem; border-radius: var(--radius);">
+      <div class="card-title">Feed Conversion Ratio (FCR) Curve</div>
+      <p style="font-size: 12px; color: var(--text-muted); margin-bottom: 1rem;">Monitors daily cumulative FCR efficiency against target standard benchmark (1.55).</p>
+      <div class="chart-area" style="position: relative; height: 260px; width: 100%;">
+        <svg id="chart-fcr" viewBox="0 0 500 200" class="w-full h-full" style="overflow: visible;">
+          <!-- Painted by scripts.js -->
+        </svg>
+      </div>
+      <div style="display:flex; justify-content:center; gap:1.5rem; font-size:11px; font-weight:700; margin-top:0.75rem;">
+        <span style="color:var(--primary); display:flex; align-items:center; gap:4px;"><span style="display:inline-block; width:10px; height:3px; background:var(--primary);"></span> Actual FCR</span>
+        <span style="color:var(--accent); display:flex; align-items:center; gap:4px;"><span style="display:inline-block; width:10px; height:3px; background:var(--accent); border-bottom:1px dashed var(--accent);"></span> Benchmark Target (1.55)</span>
+      </div>
+    </div>
+
+    <!-- Real-Time Alerts Card -->
+    <div class="card" style="background: var(--surface); padding: 1.5rem; border-radius: var(--radius);">
+      <div class="card-title">Real-Time Risk Alerts Control Room</div>
+      <p style="font-size: 12px; color: var(--text-muted); margin-bottom: 1rem;">Algorithmic anomalies detected based on latest feed and weather records.</p>
+      
+      <div class="stack" id="analytics-alerts-container" style="gap: 12px;">
+        <!-- Populated dynamically with alerts -->
+        <div class="alert alert-success" style="padding: 10px; border-radius: 8px;">
+          <div class="alert-icon">&checkmark;</div>
+          <div>All active pens operational. No severe anomalies reported.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- GROWTH PREDICTOR PAGE -->
+<div id="page-mlpredict" class="page">
+  <div class="page-header">
+    <span class="page-eyebrow">Random Forest Engine</span>
+    <h1>Growth Predictor</h1>
+    <p>Simulate growth variables and run calculations using Random Forest models trained on simulated datasets.</p>
+  </div>
+
+  <div class="grid3" style="align-items: start; gap: 1.5rem; margin-bottom: 2rem;">
+    <!-- Inputs Form Card -->
+    <div class="card md:col-span-1" style="background: var(--surface); padding: 1.5rem; border-radius: var(--radius);">
+      <div class="card-title">Feature Inputs Panel</div>
+      <form id="ml-predict-form" onsubmit="event.preventDefault(); runMlPrediction();">
+        <div class="field mb-md">
+          <label>Broiler Breed / Strain</label>
+          <select id="ml-breed">
+            <option value="Cobb 500">Cobb 500 (broiler)</option>
+            <option value="Ross 308">Ross 308 (broiler)</option>
+            <option value="Marshall">Marshall (broiler)</option>
+            <option value="Noiler">Noiler (dual purpose)</option>
+          </select>
+        </div>
+        <div class="field mb-md">
+          <label>Bird Age (1 - 120 days)</label>
+          <input type="number" id="ml-age" value="28" min="1" max="120" required>
+        </div>
+        <div class="field mb-md">
+          <label>Flock Count</label>
+          <input type="number" id="ml-flock-size" value="600" min="1" required>
+        </div>
+        <div class="field mb-md">
+          <label>Temperature (C)</label>
+          <input type="number" id="ml-temp" value="30" min="15" max="45" required>
+        </div>
+        <div class="field mb-md">
+          <label>Humidity (%)</label>
+          <input type="number" id="ml-humidity" value="65" min="20" max="100" required>
+        </div>
+        <div class="field mb-md">
+          <label>Daily Feed / Bird (grams)</label>
+          <input type="number" id="ml-feed" value="95" min="10" max="250" required>
+        </div>
+        <div class="field mb-md">
+          <label>Daily Water / Bird (ml)</label>
+          <input type="number" id="ml-water" value="210" min="20" max="500" required>
+        </div>
+        <div class="field mb-md">
+          <label>Season</label>
+          <select id="ml-season">
+            <option value="Dry/Harmattan">Dry / Harmattan</option>
+            <option value="Early Rainy">Early rainy season</option>
+            <option value="Peak Rainy">Peak rainy season</option>
+            <option value="Late Rainy">Late rainy season</option>
+          </select>
+        </div>
+        <div class="field mb-lg">
+          <label>Health Condition</label>
+          <select id="ml-health">
+            <option value="Healthy">Healthy (Comfort state)</option>
+            <option value="Mild Stress">Mild Stress / Low Appetite</option>
+            <option value="Recovering">Recovering from illness</option>
+            <option value="Post-Vaccination">Post-vaccination stress</option>
+          </select>
+        </div>
+        <button type="submit" class="btn btn-primary btn-full">
+          <span class="material-symbols-outlined">auto_awesome</span> Execute Prediction
+        </button>
+      </form>
+    </div>
+
+    <!-- Outputs Panel -->
+    <div class="md:col-span-2 stack" style="gap: 1.5rem;">
+      <div class="card" style="background: var(--surface); padding: 1.5rem; border-radius: var(--radius); border-top: 5px solid var(--primary);">
+        <div class="card-title">Model Prediction Results</div>
+        
+        <div class="grid2" style="gap: 1.5rem; margin-top: 1rem; margin-bottom: 1.5rem;">
+          <!-- Result Card 1: Estimated weight -->
+          <div style="background: var(--primary-soft); border-radius: var(--radius); padding: 1.25rem; border: 1px solid var(--border-soft); text-align: center;">
+            <div style="font-size: 11px; font-weight: 700; color: var(--primary); text-transform: uppercase; margin-bottom: 8px;">Predicted Bird Weight</div>
+            <div id="ml-res-weight" style="font-size: 36px; font-weight: 800; color: var(--primary-strong);">1,120.0 g</div>
+            <div style="font-size: 12px; color: var(--text-sec); margin-top: 8px; font-weight: 600;">
+              Confidence Interval (10% - 90%):<br>
+              <span id="ml-res-weight-range" style="color: var(--primary)">[1,080.5 g - 1,155.0 g]</span>
+            </div>
+          </div>
+
+          <!-- Result Card 2: Mortality Risk -->
+          <div style="background: var(--surface-muted); border-radius: var(--radius); padding: 1.25rem; border: 1px solid var(--border-soft); text-align: center;">
+            <div style="font-size: 11px; font-weight: 700; color: var(--text-muted); text-transform: uppercase; margin-bottom: 8px;">Estimated Mortality Risk</div>
+            <div id="ml-res-mort-pct" style="font-size: 36px; font-weight: 800; color: var(--success);">1.2%</div>
+            <div style="font-size: 12px; color: var(--text-sec); margin-top: 8px; font-weight: 600;">
+              Severity Alert Level:<br>
+              <span id="ml-res-mort-level" class="badge badge-green">Low Risk</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="detail-grid">
+          <div class="detail-item">
+            <div class="detail-label">Calculated FCR</div>
+            <div class="detail-value" id="ml-res-fcr">1.625</div>
+          </div>
+          <div class="detail-item">
+            <div class="detail-label">Efficiency Status</div>
+            <div class="detail-value" id="ml-res-fcr-status"><span class="badge badge-green">Efficient</span></div>
+          </div>
+          <div class="detail-item">
+            <div class="detail-label">Metabolic growth phase</div>
+            <div class="detail-value" id="ml-res-phase">Grower Phase</div>
+          </div>
+          <div class="detail-item">
+            <div class="detail-label">Model status</div>
+            <div class="detail-value" style="color: var(--success); font-weight: 800;">Twin RF Loaded</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Feature Importance Explanation Card -->
+      <div class="card" style="background: var(--surface); padding: 1.5rem; border-radius: var(--radius);">
+        <div class="card-title">Feature Contribution Model Explainer</div>
+        <p style="font-size: 12px; color: var(--text-muted); margin-bottom: 1.25rem;">
+          Shows the relative influence of input variables on the Random Forest weight prediction curve.
+        </p>
+        
+        <div class="stack" style="gap: 12px;">
+          <div>
+            <div style="display:flex; justify-content:space-between; font-size:11px; font-weight:700; color:var(--text-sec); margin-bottom:4px;">
+              <span>Bird Age (Days)</span>
+              <span>45% influence</span>
+            </div>
+            <div style="background:#e8dfd0; height:8px; border-radius:4px; overflow:hidden;">
+              <div style="background:var(--primary); width:45%; height:100%;"></div>
+            </div>
+          </div>
+
+          <div>
+            <div style="display:flex; justify-content:space-between; font-size:11px; font-weight:700; color:var(--text-sec); margin-bottom:4px;">
+              <span>Daily Feed Intake (g)</span>
+              <span>20% influence</span>
+            </div>
+            <div style="background:#e8dfd0; height:8px; border-radius:4px; overflow:hidden;">
+              <div style="background:var(--primary); width:20%; height:100%;"></div>
+            </div>
+          </div>
+
+          <div>
+            <div style="display:flex; justify-content:space-between; font-size:11px; font-weight:700; color:var(--text-sec); margin-bottom:4px;">
+              <span>Ambient Temperature (&deg;C)</span>
+              <span>15% influence</span>
+            </div>
+            <div style="background:#e8dfd0; height:8px; border-radius:4px; overflow:hidden;">
+              <div style="background:var(--primary); width:15%; height:100%;"></div>
+            </div>
+          </div>
+
+          <div>
+            <div style="display:flex; justify-content:space-between; font-size:11px; font-weight:700; color:var(--text-sec); margin-bottom:4px;">
+              <span>Breed / Strain</span>
+              <span>10% influence</span>
+            </div>
+            <div style="background:#e8dfd0; height:8px; border-radius:4px; overflow:hidden;">
+              <div style="background:var(--primary); width:10%; height:100%;"></div>
+            </div>
+          </div>
+
+          <div>
+            <div style="display:flex; justify-content:space-between; font-size:11px; font-weight:700; color:var(--text-sec); margin-bottom:4px;">
+              <span>Relative Humidity (%)</span>
+              <span>10% influence</span>
+            </div>
+            <div style="background:#e8dfd0; height:8px; border-radius:4px; overflow:hidden;">
+              <div style="background:var(--primary); width:10%; height:100%;"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+    </main>
+  </div>
+</div>
+
+<nav class="bottom-nav" aria-label="Mobile menu">
+  <button type="button" class="nav-btn active" data-page="dashboard" onclick="showPage('dashboard', this)">
+    <span class="material-symbols-outlined nav-icon" aria-hidden="true">dashboard</span> Dashboard
+  </button>
+  <button type="button" class="nav-btn" data-page="predict" onclick="showPage('predict', this)">
+    <span class="material-symbols-outlined nav-icon" aria-hidden="true">calendar_today</span> Feed
+  </button>
+  <button type="button" class="nav-btn" data-page="flock" onclick="showPage('flock', this)">
+    <span class="material-symbols-outlined nav-icon" aria-hidden="true">grid_view</span> Pens
+  </button>
+  <button type="button" class="nav-btn" data-page="records" onclick="showPage('records', this)">
+    <span class="material-symbols-outlined nav-icon" aria-hidden="true">history</span> History
+  </button>
+  <button type="button" class="nav-btn" data-page="mlpredict" onclick="showPage('mlpredict', this)">
+    <span class="material-symbols-outlined nav-icon" aria-hidden="true">online_prediction</span> Growth
+  </button>
+  <button type="button" class="nav-btn" data-page="analytics" onclick="showPage('analytics', this)">
+    <span class="material-symbols-outlined nav-icon" aria-hidden="true">trending_up</span> Insights
+  </button>
+</nav>
+
+<script src="/static/scripts.js" defer></script>
+</body>
+</html>
