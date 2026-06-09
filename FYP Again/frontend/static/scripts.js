@@ -20,14 +20,14 @@ document.addEventListener('DOMContentLoaded', () => {
     window.location.href = 'login.html';
     return;
   }
-  
+
   currentUser = JSON.parse(userData);
 
   // 2. Apply user profile details to page elements
   const topbarSub = document.getElementById('topbar-sub');
   const sidebarSub = document.querySelector('.sidebar p');
   const heroFarmTitle = document.querySelector('.dashboard-hero h1');
-  
+
   if (topbarSub) topbarSub.textContent = currentUser.farm_name || 'My Farm';
   if (sidebarSub) sidebarSub.textContent = currentUser.full_name || 'Manager';
   if (heroFarmTitle) heroFarmTitle.textContent = currentUser.farm_name || 'My Farm';
@@ -292,7 +292,7 @@ async function getAdvice() {
     const plan = await getAdviceFromBackend(payload);
     renderPlan(plan, payload.bird_count, payload.temperature);
     window._lastPlan = { plan, count: payload.bird_count, temp: payload.temperature };
-    
+
     // Automatically refresh history in background
     setTimeout(fetchSavedRecords, 500);
   } catch (e) {
@@ -316,7 +316,7 @@ function saveRecord() {
 
 async function fetchSavedRecords() {
   if (!currentUser || !currentUser.id) return;
-  
+
   try {
     const response = await fetch(`/api/records/${currentUser.id}`);
     if (!response.ok) return;
@@ -331,12 +331,12 @@ function renderRecords(records) {
   window.SAVED_RECORDS = records;
   const tbody = document.getElementById('records-tbody');
   if (!tbody) return;
-  
+
   if (records.length === 0) {
     tbody.innerHTML = `<tr><td colspan="7" style="text-align:center;color:var(--text-muted);padding:24px">No feed history found. Run a new feed plan to start logging!</td></tr>`;
     return;
   }
-  
+
   tbody.innerHTML = records.map((r, index) => {
     const date = new Date(r.created_at);
     const fmtDate = date.toLocaleDateString('en-GB', {
@@ -344,14 +344,14 @@ function renderRecords(records) {
       month: 'short',
       year: 'numeric'
     });
-    
+
     const isManual = r.is_manual || !r.feed_per_bird;
     const planText = isManual ? (r.breed || 'Grower mash') : `${r.breed || 'Flock'} Plan`;
     const feedText = isManual ? planText : `${planText} (${r.feed_per_bird}g per bird)`;
-    const badgeHtml = isManual 
+    const badgeHtml = isManual
       ? `<span class="badge badge-gray">Note</span>`
       : `<span class="badge badge-info">Plan</span>`;
-    
+
     return `
       <tr data-type="${isManual ? 'manual' : 'ai'}" onclick="showRecordDetail(${index})" style="cursor: pointer;" class="hover:bg-primary-soft/30 transition-colors">
         <td>${fmtDate}</td>
@@ -383,7 +383,7 @@ function addPen() {
   const age = document.getElementById('new-pen-age').value || '1';
   const target = document.getElementById('new-pen-target').value || '2200';
   const tbody = document.getElementById('pen-tbody');
-  
+
   const row = document.createElement('tr');
   row.innerHTML = `
     <td>${name}</td><td>${count}</td><td>${breed}</td><td>${age} d</td>
@@ -419,7 +419,7 @@ function saveManual() {
   const kg = document.getElementById('m-kg').value || '—';
   const temp = document.getElementById('m-temp').value || '—';
   const notes = document.getElementById('m-notes').value || '—';
-  
+
   const manualRecord = {
     created_at: new Date(date).toISOString(),
     pen_name: pen,
@@ -430,11 +430,11 @@ function saveManual() {
     notes: notes,
     is_manual: true
   };
-  
+
   if (!window.SAVED_RECORDS) window.SAVED_RECORDS = [];
   window.SAVED_RECORDS.unshift(manualRecord);
   renderRecords(window.SAVED_RECORDS);
-  
+
   document.getElementById('manual-form').classList.add('hidden');
 }
 
@@ -445,9 +445,9 @@ let _currentDetailRecordIndex = null;
 function showRecordDetail(index) {
   const r = window.SAVED_RECORDS && window.SAVED_RECORDS[index];
   if (!r) return;
-  
+
   _currentDetailRecordIndex = index;
-  
+
   const date = new Date(r.created_at);
   const fmtDate = date.toLocaleDateString('en-GB', {
     day: '2-digit',
@@ -456,7 +456,7 @@ function showRecordDetail(index) {
     hour: '2-digit',
     minute: '2-digit'
   });
-  
+
   document.getElementById('det-date').textContent = fmtDate;
   document.getElementById('det-pen-title').textContent = `${r.pen_name || 'Pen Details'} - Feed Plan`;
   document.getElementById('det-pen-name').textContent = r.pen_name || 'Pen A';
@@ -466,7 +466,7 @@ function showRecordDetail(index) {
   document.getElementById('det-temp').textContent = r.temp ? `${r.temp}°C` : '—';
   document.getElementById('det-season').textContent = r.season || 'Dry / Harmattan';
   document.getElementById('det-health').textContent = r.health_status || r.health || 'Healthy';
-  
+
   // Mortality Risk Badge
   const mortEl = document.getElementById('det-mortality');
   const risk = (r.mortality_risk || 'Low').trim().toLowerCase();
@@ -477,13 +477,13 @@ function showRecordDetail(index) {
   } else {
     mortEl.innerHTML = `<span class="badge badge-green" style="background:var(--success-soft);color:var(--success);font-weight:700">Low Risk</span>`;
   }
-  
+
   // Feeding Profile
   const isManual = r.is_manual || !r.feed_per_bird;
   const feedPerBirdVal = isManual ? '—' : `${r.feed_per_bird} g`;
   document.getElementById('det-feed-per-bird').textContent = feedPerBirdVal;
   document.getElementById('det-total-feed').textContent = `${r.total_feed_kg} kg`;
-  
+
   // Ration mix or Notes
   const extraRationBox = document.getElementById('det-extra-ration');
   if (isManual) {
@@ -512,7 +512,7 @@ function showRecordDetail(index) {
     `;
     document.getElementById('btn-reapply').style.display = 'inline-flex';
   }
-  
+
   // Show modal overlay
   document.getElementById('record-detail-overlay').classList.add('active');
 }
@@ -527,23 +527,23 @@ function reapplyFeedPlan() {
   if (_currentDetailRecordIndex === null) return;
   const r = window.SAVED_RECORDS[_currentDetailRecordIndex];
   if (!r) return;
-  
+
   // Close modal
   closeRecordDetailModal();
-  
+
   // Fill prediction form fields
   const breedSelect = document.getElementById('breed');
   if (breedSelect) breedSelect.value = r.breed || 'Cobb 500';
-  
+
   const ageInput = document.getElementById('age');
   if (ageInput) ageInput.value = r.age_days || 28;
-  
+
   const birdsInput = document.getElementById('birds');
   if (birdsInput) birdsInput.value = r.flock_size || 600;
-  
+
   const tempInput = document.getElementById('temp');
   if (tempInput) tempInput.value = r.temp || 30;
-  
+
   // Season map back
   const seasonSelect = document.getElementById('season');
   if (seasonSelect) {
@@ -554,7 +554,7 @@ function reapplyFeedPlan() {
     else if (s.includes('Late')) seasonSelect.value = 'Late rainy season';
     else seasonSelect.value = s;
   }
-  
+
   // Health map back
   const healthSelect = document.getElementById('health');
   if (healthSelect) {
@@ -564,13 +564,13 @@ function reapplyFeedPlan() {
     else if (h === 'Low appetite') healthSelect.value = 'Low appetite';
     else healthSelect.value = 'Healthy';
   }
-  
+
   // Navigate to Feed page
   const feedNavBtn = document.querySelector('[data-page="predict"]');
   if (feedNavBtn) {
     showPage('predict', feedNavBtn);
   }
-  
+
   // Auto trigger the calculation
   setTimeout(() => {
     getAdvice();
@@ -584,34 +584,34 @@ function updateOverrideSim() {
   const mRange = document.getElementById('maizeRange');
   const sRange = document.getElementById('soyRange');
   const fRange = document.getElementById('fishRange');
-  
+
   if (!mRange || !sRange || !fRange) return;
-  
+
   const m = Number(mRange.value);
   const s = Number(sRange.value);
   const f = Number(fRange.value);
-  
+
   // Update slider text labels
   document.getElementById('maizeVal').textContent = `${m}%`;
   document.getElementById('soyVal').textContent = `${s}%`;
   document.getElementById('fishVal').textContent = `${f}%`;
-  
+
   // Calculate simulated weight based on crude protein (soy + fish) and energy (maize)
   // Base weight at day 28 is 1120g
   // Higher protein (ideal 20-22%) increases weight gain, too low or too high decreases it.
   const totalProteinRatio = (s * 0.44 + f * 0.65) / 100; // rough crude protein estimation
   const proteinFactor = 1.0 + (totalProteinRatio - 0.15) * 1.2;
   const energyFactor = 0.95 + (m / 100) * 0.1;
-  
+
   const simulatedWeight = Math.round(1120 * proteinFactor * energyFactor);
-  
+
   // Cost estimation: Maize is ₦600/kg, Soy is ₦1200/kg, Fish is ₦2500/kg
   const costPerKg = (m * 600 + s * 1200 + f * 2500) / 100;
   const flockSize = 12450;
   const feedPerBirdKg = 0.11; // 110g per bird
   const totalFeedNeededKg = flockSize * feedPerBirdKg;
   const dailyCost = Math.round(totalFeedNeededKg * costPerKg);
-  
+
   document.getElementById('simWeight').textContent = `${simulatedWeight.toLocaleString()} g`;
   document.getElementById('simCost').textContent = `₦${dailyCost.toLocaleString()}`;
 }
@@ -622,11 +622,11 @@ async function lockNutritionDecision() {
   const f = document.getElementById('fishRange').value;
   const weight = document.getElementById('simWeight').textContent;
   const cost = document.getElementById('simCost').textContent;
-  
+
   if (!currentUser || !currentUser.id) return;
-  
+
   const customRationDesc = `Override: Maize ${m}% + Soybean ${s}% + Fish ${f}% (${weight})`;
-  
+
   // Save custom override to database records via API
   const backendPayload = {
     user_id: currentUser.id,
@@ -641,14 +641,14 @@ async function lockNutritionDecision() {
     feed_per_bird_g: 110,
     total_feed_kg: 1369.5,
   };
-  
+
   try {
     const response = await fetch('/api/recommend/feed', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(backendPayload),
     });
-    
+
     if (response.ok) {
       alert(`Nutrition decision locked! Your custom formula (${customRationDesc}) has been recorded in your dashboard feed history.`);
       fetchSavedRecords();
@@ -694,7 +694,7 @@ const PENS_DATABASE = {
 function openEditPenModal(name, count, breed, age, target, weight = 1120, fcr = '1.72', deaths = '1.2%') {
   const modal = document.getElementById('edit-pen-modal');
   if (!modal) return;
-  
+
   // Update form inputs
   document.getElementById('edit-pen-title').textContent = `Edit Details: ${name}`;
   document.getElementById('edit-pen-original-name').value = name;
@@ -704,7 +704,7 @@ function openEditPenModal(name, count, breed, age, target, weight = 1120, fcr = 
   document.getElementById('edit-pen-age').value = age;
   document.getElementById('edit-pen-weight').value = weight;
   document.getElementById('edit-pen-target').value = target;
-  
+
   modal.classList.remove('hidden');
   modal.scrollIntoView({ behavior: 'smooth', block: 'center' });
 }
@@ -724,11 +724,11 @@ function savePenEdits() {
   const age = Number(document.getElementById('edit-pen-age').value) || 1;
   const weight = Number(document.getElementById('edit-pen-weight').value) || 100;
   const target = Number(document.getElementById('edit-pen-target').value) || 2000;
-  
+
   // Calculate simulated FCR dynamically
   const simulatedFcr = (1.75 + (age * 0.005) - (weight / target * 0.1)).toFixed(2);
   const statusBadge = weight >= (target * (age/45)) ? '<span class="badge badge-green">On track</span>' : '<span class="badge badge-danger">Behind</span>';
-  
+
   // Save changes to local database
   PENS_DATABASE[name] = {
     birds: count,
@@ -739,7 +739,7 @@ function savePenEdits() {
     fcr: simulatedFcr,
     deaths: PENS_DATABASE[originalName] ? PENS_DATABASE[originalName].deaths : '1.0%'
   };
-  
+
   if (originalName !== name) {
     delete PENS_DATABASE[originalName];
   }
@@ -749,7 +749,7 @@ function savePenEdits() {
   if (tbody) {
     const rows = Array.from(tbody.querySelectorAll('tr'));
     const matchedRow = rows.find(r => r.cells[0].textContent.trim() === originalName);
-    
+
     if (matchedRow) {
       matchedRow.setAttribute('onclick', `openEditPenModal('${name}', ${count}, '${breed}', ${age}, ${target}, ${weight}, '${simulatedFcr}', '1.0%')`);
       matchedRow.innerHTML = `
@@ -765,10 +765,10 @@ function savePenEdits() {
       `;
     }
   }
-  
+
   // Update options inside prediction selector dropdown
   updatePenDropdownOptions();
-  
+
   closeEditPenModal();
   alert(`${name} details updated successfully!`);
 }
@@ -776,8 +776,8 @@ function savePenEdits() {
 function updatePenDropdownOptions() {
   const dropdown = document.getElementById('p-pen-select');
   if (!dropdown) return;
-  
-  dropdown.innerHTML = '<option value="">-- Select Pen to Autofill Profile --</option>' + 
+
+  dropdown.innerHTML = '<option value="">-- Select Pen to Autofill Profile --</option>' +
     Object.keys(PENS_DATABASE).map(key => {
       const pen = PENS_DATABASE[key];
       return `<option value="${key}">${key} (${pen.birds} ${pen.breed}, ${pen.age} days)</option>`;
@@ -788,12 +788,12 @@ function updatePenDropdownOptions() {
 function calculateFeedForActivePen() {
   const name = document.getElementById('edit-pen-name').value;
   if (!name) return;
-  
+
   closeEditPenModal();
-  
+
   // Redirect to Predict Tab
   goFeedPlan();
-  
+
   // Pre-select Pen inside selector dropdown and trigger pre-fill
   const select = document.getElementById('p-pen-select');
   if (select) {
@@ -805,28 +805,28 @@ function calculateFeedForActivePen() {
 // Pre-populates the Feed Optimization form with clicked Pen properties
 function loadPenIntoFeedPlan(penName) {
   if (!penName) return;
-  
+
   const pen = PENS_DATABASE[penName];
   if (!pen) return;
-  
+
   // Pre-fill Feed Plan form fields
   const breedField = document.getElementById('p-breed');
   const countField = document.getElementById('p-count');
   const ageField = document.getElementById('p-age');
   const weightField = document.getElementById('p-weight');
   const phaseField = document.getElementById('p-phase');
-  
+
   if (countField) countField.value = pen.birds;
   if (ageField) ageField.value = pen.age;
   if (weightField) weightField.value = pen.weight;
-  
+
   // Map breed values
   if (breedField) {
     const options = Array.from(breedField.options);
     const matchedOption = options.find(o => o.value.toLowerCase().includes(pen.breed.split(' ')[0].toLowerCase()));
     if (matchedOption) breedField.value = matchedOption.value;
   }
-  
+
   // Calculate and map growth phase based on age
   if (phaseField) {
     if (pen.age <= 14) {
@@ -837,7 +837,7 @@ function loadPenIntoFeedPlan(penName) {
       phaseField.value = 'Finisher (29-42 days)';
     }
   }
-  
+
   // Save selected Pen name globally so when saved, it associates with this pen in history
   window._activeFeedPlanPenName = penName;
 }
@@ -865,12 +865,12 @@ async function fetchDailyLogs() {
 function renderDailyLogsTable() {
   const tbody = document.getElementById('logs-tbody');
   if (!tbody) return;
-  
+
   if (DAILY_LOGS_DATABASE.length === 0) {
     tbody.innerHTML = `<tr><td colspan="7" style="text-align:center;color:var(--text-muted);padding:20px">No daily performance records found. Complete the entry form above to log your first record!</td></tr>`;
     return;
   }
-  
+
   tbody.innerHTML = DAILY_LOGS_DATABASE.map(log => {
     const fmtDate = new Date(log.log_date).toLocaleDateString('en-GB', {
       day: '2-digit', month: 'short', year: 'numeric'
@@ -906,13 +906,13 @@ function validateLogInputs() {
 
   const alertBox = document.getElementById('log-validation-alert');
   const alertMsg = document.getElementById('log-validation-msg');
-  
+
   if (!alertBox || !alertMsg) return true;
-  
+
   alertBox.classList.add('hidden');
   const warnings = [];
   const penInfo = PENS_DATABASE[selectPen];
-  
+
   if (penInfo && deathsVal > penInfo.birds) {
     warnings.push(`CRITICAL: Deaths entered (${deathsVal}) exceeds current flock size of ${selectPen} (${penInfo.birds} birds).`);
   }
@@ -922,7 +922,7 @@ function validateLogInputs() {
     const feedPerBirdG = (feedVal * 1000) / penSize;
     const estDailyFcr = (feedPerBirdG / (weightVal * 0.08 || 1)).toFixed(2);
     document.getElementById('live-fcr').textContent = estDailyFcr;
-    
+
     if (estDailyFcr < 1.4) {
       document.getElementById('live-fcr-status').innerHTML = `<span class="badge badge-green">Highly Efficient</span>`;
     } else if (estDailyFcr < 2.0) {
@@ -939,7 +939,7 @@ function validateLogInputs() {
   if (feedVal > 0 && waterVal > 0) {
     const waterFeedRatio = (waterVal / feedVal).toFixed(2);
     document.getElementById('live-water-feed').textContent = waterFeedRatio;
-    
+
     if (waterFeedRatio >= 1.8 && waterFeedRatio <= 2.6) {
       document.getElementById('live-water-status').innerHTML = `<span class="badge badge-green">Normal (Ideal)</span>`;
     } else if (waterFeedRatio > 2.6) {
@@ -977,7 +977,7 @@ function validateLogInputs() {
   if (deathsVal > 0 && penInfo) {
     const dailyMortRisk = ((deathsVal / penInfo.birds) * 100).toFixed(2);
     document.getElementById('live-mort-pct').textContent = `${dailyMortRisk}%`;
-    
+
     if (dailyMortRisk > 0.1) {
       document.getElementById('live-mort-status').innerHTML = `<span class="badge badge-danger">OUTBREAK RISK</span>`;
       warnings.push(`CRITICAL: Daily mortality rate is extremely high (${dailyMortRisk}%). Quarantine pen immediately.`);
@@ -994,7 +994,7 @@ function validateLogInputs() {
     alertMsg.innerHTML = warnings.map(w => `• ${w}`).join('<br>');
     return false;
   }
-  
+
   return true;
 }
 
@@ -1020,12 +1020,12 @@ async function submitDailyLog() {
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(payload)
     });
-    
+
     if (!res.ok) {
       const err = await res.json();
       throw new Error(err.error || 'Server rejected daily log entry.');
     }
-    
+
     alert('Daily performance log recorded successfully!');
     resetLoggingForm();
     await fetchDailyLogs();
@@ -1042,13 +1042,13 @@ function resetLoggingForm() {
 function renderAnalyticsCharts() {
   const penSelectVal = document.getElementById('log-pen-select')?.value || 'Pen A';
   const logs = DAILY_LOGS_DATABASE.filter(l => l.pen_name === penSelectVal).reverse();
-  
+
   const growthFeedEl = document.getElementById('chart-growth-feed');
   const profitEl = document.getElementById('chart-profitability');
   const fcrEl = document.getElementById('chart-fcr');
-  
+
   if (!growthFeedEl || !profitEl || !fcrEl) return;
-  
+
   if (logs.length === 0) {
     growthFeedEl.innerHTML = `<text x="250" y="100" text-anchor="middle" fill="var(--text-muted)" font-size="10">No logging records found for ${penSelectVal}. Add data to plot trends.</text>`;
     profitEl.innerHTML = `<text x="250" y="100" text-anchor="middle" fill="var(--text-muted)" font-size="10">No logs found. Add logs to view profitability.</text>`;
@@ -1058,13 +1058,13 @@ function renderAnalyticsCharts() {
 
   const maxWeight = Math.max(...logs.map(l => l.avg_weight_g), 1200);
   const maxFeed = Math.max(...logs.map(l => l.feed_kg), 100);
-  
+
   const pointsWeight = logs.map((l, idx) => {
     const x = 50 + (420 * (idx / Math.max(logs.length - 1, 1)));
     const y = 170 - (130 * (l.avg_weight_g / maxWeight));
     return {x, y, val: l.avg_weight_g};
   });
-  
+
   const pointsFeed = logs.map((l, idx) => {
     const x = 50 + (420 * (idx / Math.max(logs.length - 1, 1)));
     const y = 170 - (130 * (l.feed_kg / maxFeed));
@@ -1086,7 +1086,7 @@ function renderAnalyticsCharts() {
     <line x1="50" y1="40" x2="470" y2="40" stroke="var(--border-soft)" stroke-dasharray="4,4"/>
     <line x1="50" y1="105" x2="470" y2="105" stroke="var(--border-soft)" stroke-dasharray="4,4"/>
     <line x1="50" y1="170" x2="470" y2="170" stroke="var(--border)" stroke-width="1.5"/>
-    
+
     <!-- Y-Axis labels -->
     <text x="40" y="44" font-size="7" font-weight="700" fill="var(--primary)" text-anchor="end">${Math.round(maxWeight)}g</text>
     <text x="40" y="109" font-size="7" font-weight="700" fill="var(--primary)" text-anchor="end">${Math.round(maxWeight/2)}g</text>
@@ -1094,14 +1094,14 @@ function renderAnalyticsCharts() {
 
     <text x="480" y="44" font-size="7" font-weight="700" fill="var(--accent)" text-anchor="start">${Math.round(maxFeed)}kg</text>
     <text x="480" y="109" font-size="7" font-weight="700" fill="var(--accent)" text-anchor="start">${Math.round(maxFeed/2)}kg</text>
-    
+
     <!-- Paths -->
     <path d="${pathWeight}" fill="none" stroke="var(--primary)" stroke-width="3" stroke-linecap="round"/>
     <path d="${pathFeed}" fill="none" stroke="var(--accent)" stroke-width="2.5" stroke-dasharray="3,3" stroke-linecap="round"/>
-    
+
     <!-- Dots for Weight -->
     ${pointsWeight.map(p => `<circle cx="${p.x}" cy="${p.y}" r="3.5" fill="var(--primary)" stroke="#fff" stroke-width="1"/>`).join('')}
-    
+
     <!-- Dates -->
     ${datesLabel}
   `;
@@ -1191,7 +1191,7 @@ function renderAnalyticsCharts() {
 
     <!-- FCR line path -->
     <path d="${pathFcr}" fill="none" stroke="var(--primary)" stroke-width="3" stroke-linecap="round"/>
-    
+
     <!-- Dots for FCR -->
     ${pointsFcr.map(p => `
       <circle cx="${p.x}" cy="${p.y}" r="3.5" fill="var(--primary)" stroke="#fff" stroke-width="1"/>
@@ -1211,7 +1211,7 @@ function renderRiskAlertsRoom(logs) {
 
   const alerts = [];
   const latest = logs[0];
-  
+
   if (latest) {
     const penSize = PENS_DATABASE[latest.pen_name]?.birds || 600;
     const dailyIntakePerBirdG = (latest.feed_kg * 1000) / penSize;
@@ -1243,7 +1243,7 @@ function renderRiskAlertsRoom(logs) {
         msg: `HEALTH ANOMALY: ${latest.deaths} deaths reported today in Pen ${latest.pen_name}. Quarantine listless birds.`
       });
     }
-    
+
     if (latest.humidity_pct > 82) {
       alerts.push({
         type: 'warn',
@@ -1297,14 +1297,14 @@ async function runMlPrediction() {
       throw new Error(err.error || 'Prediction calculation failed.');
     }
     const data = await res.json();
-    
+
     document.getElementById('ml-res-weight').textContent = `${data.predicted_weight_g.toFixed(1)} g`;
     document.getElementById('ml-res-weight-range').textContent = `[${data.confidence_low_g.toFixed(1)} g - ${data.confidence_high_g.toFixed(1)} g]`;
     document.getElementById('ml-res-mort-pct').textContent = `${data.mortality_pct.toFixed(1)}%`;
-    
+
     const mortLevelEl = document.getElementById('ml-res-mort-level');
     if (!mortLevelEl) return;
-    
+
     if (data.mortality_level === 'High') {
       mortLevelEl.className = 'badge badge-danger';
       mortLevelEl.textContent = 'High Risk';
@@ -1323,7 +1323,7 @@ async function runMlPrediction() {
     }
 
     document.getElementById('ml-res-fcr').textContent = data.estimated_fcr.toFixed(3);
-    
+
     const fcrStatusEl = document.getElementById('ml-res-fcr-status');
     if (fcrStatusEl) {
       if (data.fcr_level === 'Efficient') {
@@ -1397,10 +1397,10 @@ function renderVaccineCountdown() {
   container.innerHTML = pendingVaccines.map(v => {
     const penAge = PENS_DATABASE[v.pen_name]?.age || 0;
     const daysLeft = v.target_age - penAge;
-    
+
     let badgeClass = 'badge-green';
     let countdownText = '';
-    
+
     if (daysLeft < 0) {
       badgeClass = 'badge-danger';
       countdownText = `Overdue ${Math.abs(daysLeft)}d`;
@@ -1409,7 +1409,7 @@ function renderVaccineCountdown() {
       countdownText = 'Due Today';
     } else {
       badgeClass = 'badge-info';
-      countdownText = `in ${daysLeft}d`;
+      countdownText = `Administer in ${daysLeft}d`;
     }
 
     return `
@@ -1445,10 +1445,56 @@ async function administerVaccine(vaccineId) {
     }
     alert('Vaccine marked as administered successfully!');
     await fetchVaccineSchedule();
-    await fetchDailyLogs(); 
+    await fetchDailyLogs();
   } catch (err) {
     alert(`Error: ${err.message}`);
   }
 }
 
 
+
+
+function showAddVaccineModal() {
+  document.getElementById('new-vac-name').value = '';
+  document.getElementById('new-vac-age').value = '';
+  document.getElementById('add-vaccine-modal').classList.remove('hidden');
+}
+
+function closeAddVaccineModal() {
+  document.getElementById('add-vaccine-modal').classList.add('hidden');
+}
+
+async function submitAddVaccine() {
+  const pen = document.getElementById('new-vac-pen').value;
+  const name = document.getElementById('new-vac-name').value.trim();
+  const age = document.getElementById('new-vac-age').value;
+
+  if (!name || !age) {
+    alert('Please provide vaccine name and target age.');
+    return;
+  }
+
+  try {
+    const res = await fetch('/api/vaccines/add', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        user_id: currentUser.id,
+        pen_name: pen,
+        vaccine_name: name,
+        target_age: parseInt(age)
+      })
+    });
+
+    if (!res.ok) {
+      const err = await res.json();
+      throw new Error(err.error || 'Failed to schedule vaccine.');
+    }
+
+    closeAddVaccineModal();
+    alert('Vaccine scheduled successfully!');
+    await fetchVaccineSchedule();
+  } catch (err) {
+    alert(`Error: ${err.message}`);
+  }
+}

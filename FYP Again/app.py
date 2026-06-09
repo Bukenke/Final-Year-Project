@@ -118,7 +118,7 @@ def init_db():
             humidity_b = 78.0 + random.uniform(-4.0, 4.0)
             logs.append((1, "Pen B", log_date, round(feed_b, 2), round(water_b, 2), round(weight_b, 1), deaths_b, round(temp_b, 1), round(humidity_b, 1), "Seeded grow-out log", datetime.now().isoformat()))
         conn.executemany("INSERT INTO performance_logs (user_id, pen_name, log_date, feed_kg, water_l, avg_weight_g, deaths, temp_c, humidity_pct, notes, created_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)", logs)
-    
+
     v_count = conn.execute("SELECT COUNT(*) FROM vaccine_schedule").fetchone()[0]
     if v_count == 0:
         now_str = datetime.now().isoformat()
@@ -147,7 +147,7 @@ def init_db():
             (1, "Pen D", "Newcastle Booster (Killed)", 42, "Pending", None, now_str)
         ]
         conn.executemany("INSERT INTO vaccine_schedule (user_id, pen_name, vaccine_name, target_age, status, administered_date, created_at) VALUES (?, ?, ?, ?, ?, ?, ?)", vaccines)
-        
+
     conn.commit()
     conn.close()
 
@@ -474,9 +474,9 @@ def predict_flock():
         water_per_bird = float(d.get("water_intake_ml", feed_per_bird * 2))
         health = d.get("health_status", "Healthy")
         season = d.get("season", "Dry/Harmattan")
-        
+
         phase = get_phase(age)
-        
+
         # Predict Weight
         feats = pd.DataFrame([{
             "day": age, "breed_enc": encode(breed, "breed"), "phase_enc": encode(phase, "phase"),
@@ -488,11 +488,11 @@ def predict_flock():
         trees = np.array([t.predict(feats.values)[0] for t in weight_model.estimators_])
         confidence_low = round(float(np.percentile(trees, 10)), 1)
         confidence_high = round(float(np.percentile(trees, 90)), 1)
-        
+
         # Calculate FCR
         estimated_fcr = round(feed_per_bird * age / max((ml_weight) - 40, 1), 3)
         fcr_level = "Efficient" if estimated_fcr < 1.7 else "Watch" if estimated_fcr < 2.1 else "Poor"
-        
+
         # Predict Mortality
         mfeats = pd.DataFrame([{
             "day": age, "breed_enc": encode(breed, "breed"), "phase_enc": encode(phase, "phase"),
@@ -503,7 +503,7 @@ def predict_flock():
         prob = mortality_model.predict_proba(mfeats)[0]
         mort_pct = round(float(prob[1]) * 100, 1)
         mort_level = "Low" if mort_pct < 10 else "Medium" if mort_pct < 25 else "High"
-        
+
         return jsonify({
             "predicted_weight_g": ml_weight, "confidence_low_g": confidence_low, "confidence_high_g": confidence_high,
             "estimated_fcr": estimated_fcr, "fcr_level": fcr_level, "mortality_pct": mort_pct,
@@ -577,7 +577,7 @@ def save_performance_log():
 
     conn = get_db()
     conn.execute("""
-        INSERT INTO performance_logs 
+        INSERT INTO performance_logs
         (user_id, pen_name, log_date, feed_kg, water_l, avg_weight_g, deaths, temp_c, humidity_pct, notes, created_at)
         VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
     """, (uid, pen, log_date, feed, water, weight, deaths, temp, humidity, notes, datetime.now().isoformat()))
@@ -599,6 +599,32 @@ def get_vaccine_schedule(user_id):
     conn.close()
     return jsonify([dict(r) for r in rows])
 
+
+@app.route("/api/vaccines/add", methods=["POST"])
+def add_vaccine():
+    d = request.json or {}
+    user_id = d.get("user_id")
+    pen_name = d.get("pen_name")
+    vaccine_name = d.get("vaccine_name")
+    target_age = d.get("target_age")
+
+    if not user_id or not pen_name or not vaccine_name or not target_age:
+        return jsonify({"error": "Missing required fields"}), 400
+
+    try:
+        target_age = int(target_age)
+    except ValueError:
+        return jsonify({"error": "Target age must be a number"}), 400
+
+    conn = get_db()
+    conn.execute(
+        "INSERT INTO vaccine_schedule (user_id, pen_name, vaccine_name, target_age, status, created_at) VALUES (?, ?, ?, ?, 'Pending', ?)",
+        (user_id, pen_name, vaccine_name, target_age, datetime.now().isoformat())
+    )
+    conn.commit()
+    conn.close()
+    return jsonify({"message": "Vaccine scheduled successfully"}), 201
+
 @app.route("/api/vaccines/administer", methods=["POST"])
 def administer_vaccine():
     d = request.json or {}
@@ -606,24 +632,24 @@ def administer_vaccine():
     user_id = d.get("user_id")
     if not vaccine_id or not user_id:
         return jsonify({"error": "Vaccine ID and User ID are required."}), 400
-    
+
     conn = get_db()
     v = conn.execute("SELECT * FROM vaccine_schedule WHERE id=? AND user_id=?", (vaccine_id, user_id)).fetchone()
     if not v:
         conn.close()
         return jsonify({"error": "Vaccine schedule item not found."}), 404
-        
+
     admin_date = datetime.now().strftime("%Y-%m-%d")
     conn.execute("UPDATE vaccine_schedule SET status='Administered', administered_date=? WHERE id=? AND user_id=?", (admin_date, vaccine_id, user_id))
-    
+
     # Also log a note in performance_logs so that the farmer has a record of it!
     log_note = f"VACCINE ADMINISTERED: {v['vaccine_name']} (Target Age: {v['target_age']} days)"
     conn.execute("""
-        INSERT INTO performance_logs 
+        INSERT INTO performance_logs
         (user_id, pen_name, log_date, feed_kg, water_l, avg_weight_g, deaths, temp_c, humidity_pct, notes, created_at)
         VALUES (?, ?, ?, 0, 0, 0, 0, 0, 0, ?, ?)
     """, (user_id, v["pen_name"], admin_date, log_note, datetime.now().isoformat()))
-    
+
     conn.commit()
     conn.close()
     return jsonify({"message": "Vaccine marked as administered.", "administered_date": admin_date}), 200
