@@ -49,6 +49,9 @@ document.addEventListener('DOMContentLoaded', () => {
   fetchSavedRecords();
   fetchDailyLogs();
   fetchVaccineSchedule();
+  fetchRealTimeWeather();
+
+
 });
 
 // ── AUTHENTICATION MANAGEMENT ─────────────────────────────────────────────
@@ -1446,6 +1449,9 @@ async function administerVaccine(vaccineId) {
     }
     alert('Vaccine marked as administered successfully!');
     await fetchVaccineSchedule();
+  fetchRealTimeWeather();
+
+
     await fetchDailyLogs();
   } catch (err) {
     alert(`Error: ${err.message}`);
@@ -1495,6 +1501,9 @@ async function submitAddVaccine() {
     closeAddVaccineModal();
     alert('Vaccine scheduled successfully!');
     await fetchVaccineSchedule();
+  fetchRealTimeWeather();
+
+
   } catch (err) {
     alert(`Error: ${err.message}`);
   }
@@ -1541,4 +1550,82 @@ async function runIllnessPrediction() {
     loading.classList.add('hidden');
     output.innerHTML = `<span style="color: var(--danger); font-weight: bold;">Error: ${err.message}</span>`;
   }
+}
+
+
+// ── REAL-TIME WEATHER MODULE ──────────────────────────────────────────────
+async function fetchRealTimeWeather() {
+  // Using Open-Meteo for free, real-time weather data.
+  // Coordinates for Lagos (approx 6.5244, 3.3792)
+  const lat = 6.5244;
+  const lon = 3.3792;
+  const url = `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current=temperature_2m,relative_humidity_2m,weather_code&daily=weather_code,temperature_2m_max&timezone=Africa%2FLagos`;
+
+  try {
+    const res = await fetch(url);
+    if (!res.ok) throw new Error("Weather fetch failed");
+    const data = await res.json();
+
+    // Update current stats
+    const currentTemp = data.current.temperature_2m;
+    const currentHum = data.current.relative_humidity_2m;
+    const currentCode = data.current.weather_code;
+
+    document.getElementById('weather-temp').innerHTML = `${currentTemp}&deg;C`;
+    document.getElementById('weather-humidity').textContent = `HUMIDITY: ${currentHum}%`;
+    document.getElementById('weather-icon').textContent = getWeatherIcon(currentCode);
+
+    // Update badge/alerts based on conditions
+    const alertBox = document.getElementById('weather-alert-box');
+    const alertText = document.getElementById('weather-alert-text');
+    const badge = document.getElementById('weather-badge');
+
+    if (currentTemp >= 35) {
+      badge.style.display = 'inline-block';
+      badge.textContent = 'HEAT INDEX HIGH';
+      badge.style.background = '#fef3c7';
+      badge.style.color = '#b45309';
+
+      alertBox.style.display = 'flex';
+      alertText.innerHTML = `Temps exceeding 35&deg;C. **Action required:** Restrict feeding during peak heat to prevent respiratory failure. Supplement water with Vitamin C.`;
+    } else if (currentHum > 85 && currentTemp > 30) {
+      badge.style.display = 'inline-block';
+      badge.textContent = 'HIGH HUMIDITY';
+      badge.style.background = '#e0f2fe';
+      badge.style.color = '#0369a1';
+
+      alertBox.style.display = 'flex';
+      alertText.innerHTML = `High humidity and heat detected. Ensure maximum ventilation to prevent heat stress and wet litter.`;
+    } else {
+      badge.style.display = 'none';
+      alertBox.style.display = 'none';
+    }
+
+    // Update 3-day forecast
+    const days = ['SUN', 'MON', 'TUE', 'WED', 'THU', 'FRI', 'SAT'];
+    for (let i = 1; i <= 3; i++) {
+      const dateObj = new Date(data.daily.time[i]);
+      let dayName = days[dateObj.getDay()];
+      if (i === 1) dayName = 'TOMORROW';
+
+      document.getElementById(`forecast-day-${i}`).textContent = dayName;
+      document.getElementById(`forecast-icon-${i}`).textContent = getWeatherIcon(data.daily.weather_code[i]);
+      document.getElementById(`forecast-temp-${i}`).innerHTML = `${data.daily.temperature_2m_max[i]}&deg;C`;
+    }
+
+  } catch (err) {
+    console.error("Failed to load real-time weather:", err);
+  }
+}
+
+// Map WMO weather codes to material symbols
+function getWeatherIcon(code) {
+  if (code === 0) return 'wb_sunny'; // Clear sky
+  if (code >= 1 && code <= 3) return 'partly_cloudy_day'; // Partly cloudy
+  if (code >= 45 && code <= 48) return 'foggy'; // Fog
+  if (code >= 51 && code <= 67) return 'rainy'; // Rain/Drizzle
+  if (code >= 71 && code <= 77) return 'ac_unit'; // Snow
+  if (code >= 80 && code <= 82) return 'rainy'; // Showers
+  if (code >= 95) return 'thunderstorm'; // Thunderstorm
+  return 'cloud';
 }

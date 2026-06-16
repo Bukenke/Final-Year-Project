@@ -45,6 +45,9 @@
       <button type="button" class="nav-btn" data-page="analytics" onclick="showPage('analytics', this)">
         <span class="nav-icon" aria-hidden="true">📈</span> Analytics
       </button>
+      <button type="button" class="nav-btn" data-page="illness" onclick="showPage('illness', this)">
+        <span class="nav-icon" aria-hidden="true">🩺</span> Illness Predictor
+      </button>
       <button type="button" class="nav-btn" onclick="handleLogout()" style="margin-top: auto; color: #ff8b8b;">
         <span class="nav-icon" aria-hidden="true">🚪</span> Sign Out
       </button>
@@ -142,24 +145,24 @@
           <!-- Current Stats -->
           <div style="display:flex;flex-direction:column;justify-content:center;background:var(--surface);padding:1rem;border-radius:var(--radius-sm);border:1px solid var(--border-soft)">
             <div style="display:flex;align-items:center;gap:12px">
-              <span class="material-symbols-outlined" style="font-size:48px;color:var(--accent-bright)">wb_sunny</span>
+              <span id="weather-icon" class="material-symbols-outlined" style="font-size:48px;color:var(--accent-bright)">hourglass_empty</span>
               <div>
-                <span style="font-size:32px;font-weight:800;line-height:1">36&deg;C</span>
-                <p style="font-size:12px;color:var(--text-muted);font-weight:700">HUMIDITY: 78%</p>
+                <span id="weather-temp" style="font-size:32px;font-weight:800;line-height:1">--&deg;C</span>
+                <p id="weather-humidity" style="font-size:12px;color:var(--text-muted);font-weight:700">HUMIDITY: --%</p>
               </div>
             </div>
             <div style="margin-top:10px">
-              <span class="badge badge-warn" style="background:#fef3c7;color:#b45309;font-weight:800">HEAT INDEX HIGH</span>
+              <span id="weather-badge" class="badge badge-warn" style="background:#fef3c7;color:#b45309;font-weight:800;display:none;"></span>
             </div>
           </div>
 
           <!-- Heat stress alerts -->
-          <div class="weather-alert" style="background:rgba(217,119,6,0.1);border-left:4px solid var(--accent);border-radius:8px;padding:12px;font-size:12px;color:var(--warn);display:flex;flex-direction:column;justify-content:center">
+          <div id="weather-alert-box" class="weather-alert" style="background:rgba(217,119,6,0.1);border-left:4px solid var(--accent);border-radius:8px;padding:12px;font-size:12px;color:var(--warn);display:none;flex-direction:column;justify-content:center">
             <div style="display:flex;align-items:center;gap:6px;font-weight:800;margin-bottom:4px">
               <span class="material-symbols-outlined" style="font-size:16px">warning</span>
               HEAT STRESS WARNING
             </div>
-            Temps exceeding 35&deg;C expected between 11 AM - 3 PM. **Action required:** Restrict feeding during peak heat to prevent respiratory failure. Supplement water with Vitamin C.
+            <span id="weather-alert-text"></span>
           </div>
 
           <!-- Outlook -->
@@ -167,19 +170,19 @@
             <div style="font-size:11px;font-weight:700;color:var(--text-muted);margin-bottom:8px;text-align:center">3-DAY WEATHER OUTLOOK</div>
             <div style="display:grid;grid-template-columns:repeat(3, 1fr);gap:8px;text-align:center">
               <div style="background:rgba(255,255,255,0.5);border-radius:10px;padding:8px">
-                <p style="font-size:10px;font-weight:700;color:var(--text-muted)">TOMORROW</p>
-                <span class="material-symbols-outlined" style="font-size:20px;color:var(--accent-bright)">wb_sunny</span>
-                <p style="font-size:12px;font-weight:800">35&deg;C</p>
+                <p id="forecast-day-1" style="font-size:10px;font-weight:700;color:var(--text-muted)">--</p>
+                <span id="forecast-icon-1" class="material-symbols-outlined" style="font-size:20px;color:var(--accent-bright)">hourglass_empty</span>
+                <p id="forecast-temp-1" style="font-size:12px;font-weight:800">--</p>
               </div>
               <div style="background:rgba(255,255,255,0.5);border-radius:10px;padding:8px">
-                <p style="font-size:10px;font-weight:700;color:var(--text-muted)">THU</p>
-                <span class="material-symbols-outlined" style="font-size:20px;color:var(--accent-bright)">partly_sunny</span>
-                <p style="font-size:12px;font-weight:800">34&deg;C</p>
+                <p id="forecast-day-2" style="font-size:10px;font-weight:700;color:var(--text-muted)">--</p>
+                <span id="forecast-icon-2" class="material-symbols-outlined" style="font-size:20px;color:var(--accent-bright)">hourglass_empty</span>
+                <p id="forecast-temp-2" style="font-size:12px;font-weight:800">--</p>
               </div>
               <div style="background:rgba(255,255,255,0.5);border-radius:10px;padding:8px">
-                <p style="font-size:10px;font-weight:700;color:var(--text-muted)">FRI</p>
-                <span class="material-symbols-outlined" style="font-size:20px;color:var(--sky)">rainy</span>
-                <p style="font-size:12px;font-weight:800">31&deg;C</p>
+                <p id="forecast-day-3" style="font-size:10px;font-weight:700;color:var(--text-muted)">--</p>
+                <span id="forecast-icon-3" class="material-symbols-outlined" style="font-size:20px;color:var(--sky)">hourglass_empty</span>
+                <p id="forecast-temp-3" style="font-size:12px;font-weight:800">--</p>
               </div>
             </div>
           </div>
