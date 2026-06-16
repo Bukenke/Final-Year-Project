@@ -8,6 +8,7 @@ from datetime import datetime
 from functools import wraps
 import numpy as np
 import pandas as pd
+import google.generativeai as genai
 from flask import Flask, request, jsonify, session, send_from_directory
 from werkzeug.security import generate_password_hash, check_password_hash
 
@@ -511,6 +512,44 @@ def predict_flock():
         })
     except Exception as e:
         return jsonify({"error": str(e)}), 400
+
+
+@app.route("/api/predict/illness", methods=["POST"])
+def predict_illness():
+    d = request.json or {}
+    droppings = d.get("droppings", "Normal")
+    respiratory = d.get("respiratory", "Normal")
+    behavior = d.get("behavior", "Normal")
+    appearance = d.get("appearance", "Normal")
+
+    api_key = os.environ.get("GEMINI_API_KEY")
+    if not api_key:
+        return jsonify({"error": "Gemini API key not configured on server."}), 500
+
+    try:
+        genai.configure(api_key=api_key)
+        model = genai.GenerativeModel('gemini-pro')
+
+        prompt = f'''
+You are an expert poultry veterinarian. A farmer has reported the following symptoms in their flock:
+- Droppings/Feces: {droppings}
+- Respiratory Signs: {respiratory}
+- Behavior: {behavior}
+- Physical Appearance: {appearance}
+
+Based on these symptoms, please provide:
+1. The most likely illness or condition.
+2. A brief explanation of why this is the likely cause.
+3. Immediate recommended actions the farmer should take.
+4. When to call a professional vet.
+
+Keep the response concise, practical, and formatted clearly. If the symptoms are all "Normal", inform them that the birds appear healthy but to continue monitoring.
+'''
+
+        response = model.generate_content(prompt)
+        return jsonify({"prediction": response.text}), 200
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
 
 @app.route("/api/model/metrics", methods=["GET"])
 def get_metrics():

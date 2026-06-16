@@ -67,6 +67,7 @@
         <button type="button" class="nav-btn" data-page="flock" onclick="showPage('flock', this)">My Pens</button>
         <button type="button" class="nav-btn" data-page="records" onclick="showPage('records', this)">Logs &amp; History</button>
         <button type="button" class="nav-btn" data-page="mlpredict" onclick="showPage('mlpredict', this)">Growth Predictor</button>
+        <button type="button" class="nav-btn" data-page="illness" onclick="showPage('illness', this)">Illness Predictor</button>
         <button type="button" class="nav-btn" data-page="analytics" aria-label="Analytics page" onclick="showPage('analytics', this)">Analytics</button>
       </nav>
       <div class="topbar-actions">
@@ -1052,6 +1053,81 @@
             </div>
           </div>
         </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<!-- ================= ILLNESS PREDICTOR PAGE ================= -->
+<div id="page-illness" class="page">
+  <div class="dashboard-hero">
+    <h1>Illness Predictor</h1>
+    <p>Select symptoms observed in your birds to get a disease prediction and recommended actions using AI.</p>
+  </div>
+
+  <div class="split-layout">
+    <div class="card form-card">
+      <h3 style="font-weight: 800; color: var(--primary-strong); margin-bottom: 1rem;">Observed Symptoms</h3>
+      <form id="illness-predict-form" onsubmit="event.preventDefault(); runIllnessPrediction();">
+        <div class="field mb-md">
+          <label>Droppings / Feces</label>
+          <select id="illness-droppings">
+            <option value="Normal">Normal (firm with white cap)</option>
+            <option value="Watery">Watery</option>
+            <option value="Bloody">Bloody or reddish</option>
+            <option value="Greenish">Greenish</option>
+            <option value="White paste">White pasty diarrhea</option>
+          </select>
+        </div>
+
+        <div class="field mb-md">
+          <label>Respiratory Signs</label>
+          <select id="illness-respiratory">
+            <option value="Normal">Normal breathing</option>
+            <option value="Coughing/Sneezing">Coughing / Sneezing</option>
+            <option value="Gasping">Gasping for air</option>
+            <option value="Nasal discharge">Nasal discharge</option>
+            <option value="Swollen face">Swollen face / eyes</option>
+          </select>
+        </div>
+
+        <div class="field mb-md">
+          <label>Behavior</label>
+          <select id="illness-behavior">
+            <option value="Normal">Active and eating normally</option>
+            <option value="Lethargic">Lethargic / Huddling together</option>
+            <option value="Loss of appetite">Loss of appetite</option>
+            <option value="Drooping wings">Drooping wings</option>
+            <option value="Paralysis">Paralysis or trembling</option>
+          </select>
+        </div>
+
+        <div class="field mb-md">
+          <label>Physical Appearance</label>
+          <select id="illness-appearance">
+            <option value="Normal">Healthy plumage</option>
+            <option value="Ruffled feathers">Ruffled feathers</option>
+            <option value="Pale comb/wattles">Pale comb or wattles</option>
+            <option value="Lesions/Scabs">Lesions or scabs on skin</option>
+            <option value="Swollen joints">Swollen joints</option>
+          </select>
+        </div>
+
+        <button type="submit" class="btn btn-primary w-full mt-lg">Analyze Symptoms</button>
+      </form>
+    </div>
+
+    <div>
+      <div class="card" id="illness-result-card" style="display: none; border: 2px solid var(--primary); background: var(--surface);">
+        <h3 style="font-weight: 800; color: var(--primary-strong); border-bottom: 2px solid var(--border-soft); padding-bottom: 12px; margin-bottom: 16px;">
+          Prediction Results
+        </h3>
+        <div id="illness-loading" class="hidden" style="text-align: center; padding: 20px;">
+          <div class="spinner"></div>
+          <p style="color: var(--text-muted); font-size: 14px; margin-top: 10px;">Analyzing symptoms with AI...</p>
+        </div>
+        <div id="illness-output" style="white-space: pre-wrap; font-size: 14px; line-height: 1.6; color: var(--text-main);"></div>
       </div>
     </div>
   </div>

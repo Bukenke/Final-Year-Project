@@ -7,6 +7,7 @@ const PAGE_TITLES = {
   records: { title: 'AgriFeed Pro', sub: 'Logs & History' },
   mlpredict: { title: 'AgriFeed Pro', sub: 'Growth Predictor' },
   analytics: { title: 'AgriFeed Pro', sub: 'Analytics & Risk Insights' },
+  illness: { title: 'AgriFeed Pro', sub: 'Illness Predictor' },
 };
 
 // Global authentication check and profile loader
@@ -1496,5 +1497,48 @@ async function submitAddVaccine() {
     await fetchVaccineSchedule();
   } catch (err) {
     alert(`Error: ${err.message}`);
+  }
+}
+
+
+async function runIllnessPrediction() {
+  const resultCard = document.getElementById('illness-result-card');
+  const loading = document.getElementById('illness-loading');
+  const output = document.getElementById('illness-output');
+
+  resultCard.style.display = 'block';
+  loading.classList.remove('hidden');
+  output.innerHTML = '';
+
+  const payload = {
+    droppings: document.getElementById('illness-droppings').value,
+    respiratory: document.getElementById('illness-respiratory').value,
+    behavior: document.getElementById('illness-behavior').value,
+    appearance: document.getElementById('illness-appearance').value
+  };
+
+  try {
+    const res = await fetch('/api/predict/illness', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload)
+    });
+
+    const data = await res.json();
+    loading.classList.add('hidden');
+
+    if (!res.ok) {
+      output.innerHTML = `<span style="color: var(--danger); font-weight: bold;">Error: ${data.error || 'Failed to analyze symptoms.'}</span>`;
+      return;
+    }
+
+    // Format markdown-like bold text **text** to HTML
+    let formattedText = data.prediction.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
+
+    output.innerHTML = formattedText;
+
+  } catch (err) {
+    loading.classList.add('hidden');
+    output.innerHTML = `<span style="color: var(--danger); font-weight: bold;">Error: ${err.message}</span>`;
   }
 }
