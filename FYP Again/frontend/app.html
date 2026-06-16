@@ -45,13 +45,16 @@
       <button type="button" class="nav-btn" data-page="analytics" onclick="showPage('analytics', this)">
         <span class="nav-icon" aria-hidden="true">📈</span> Analytics
       </button>
+      <button type="button" class="nav-btn" data-page="illness" onclick="showPage('illness', this)">
+        <span class="nav-icon" aria-hidden="true">🩺</span> Illness Predictor
+      </button>
       <button type="button" class="nav-btn" onclick="handleLogout()" style="margin-top: auto; color: #ff8b8b;">
         <span class="nav-icon" aria-hidden="true">🚪</span> Sign Out
       </button>
     </div>
     <p class="sidebar-footer">Check feed stock each morning. On hot days, feed early and late.</p>
   </aside>
-  
+
   <div class="main-wrap">
     <header class="topbar">
       <button type="button" class="hamburger-btn" onclick="toggleSidebar()" aria-label="Toggle Sidebar Menu">
@@ -67,6 +70,7 @@
         <button type="button" class="nav-btn" data-page="flock" onclick="showPage('flock', this)">My Pens</button>
         <button type="button" class="nav-btn" data-page="records" onclick="showPage('records', this)">Logs &amp; History</button>
         <button type="button" class="nav-btn" data-page="mlpredict" onclick="showPage('mlpredict', this)">Growth Predictor</button>
+        <button type="button" class="nav-btn" data-page="illness" onclick="showPage('illness', this)">Illness Predictor</button>
         <button type="button" class="nav-btn" data-page="analytics" aria-label="Analytics page" onclick="showPage('analytics', this)">Analytics</button>
       </nav>
       <div class="topbar-actions">
@@ -128,63 +132,63 @@
 
   <!-- Bento Grid: Interactive Modules, Alerts, and Beautiful SVG charts -->
   <section class="dashboard-grid" style="display:grid;grid-template-columns:1fr;gap:1.5rem;margin-bottom:1.5rem">
-    
+
     <!-- Row 1: Aesthetics Chart + Active Weather Station -->
     <div style="display:grid;grid-template-columns:1fr;gap:1.5rem" class="md:grid-cols-3">
-      
+
       <!-- Interactive Local Weather forecaster box + AgTech Alerts -->
       <div class="card weather-card md:col-span-3" style="background:linear-gradient(135deg, var(--surface) 0%, var(--primary-soft) 100%);border-radius:var(--radius);padding:1.5rem;box-shadow:var(--shadow-soft);border:1px solid #cce8d6">
         <div class="card-title" style="border-bottom:none;margin-bottom:8px">Lagos Weather Station</div>
         <p style="font-size:12px;color:var(--text-sec);margin-bottom:1.5rem">Real-time agricultural weather forecaster & alerts.</p>
-        
+
         <div style="display:grid;grid-template-columns:1fr;gap:1.5rem" class="md:grid-cols-3">
           <!-- Current Stats -->
           <div style="display:flex;flex-direction:column;justify-content:center;background:var(--surface);padding:1rem;border-radius:var(--radius-sm);border:1px solid var(--border-soft)">
             <div style="display:flex;align-items:center;gap:12px">
-              <span class="material-symbols-outlined" style="font-size:48px;color:var(--accent-bright)">wb_sunny</span>
+              <span id="weather-icon" class="material-symbols-outlined" style="font-size:48px;color:var(--accent-bright)">hourglass_empty</span>
               <div>
-                <span style="font-size:32px;font-weight:800;line-height:1">36&deg;C</span>
-                <p style="font-size:12px;color:var(--text-muted);font-weight:700">HUMIDITY: 78%</p>
+                <span id="weather-temp" style="font-size:32px;font-weight:800;line-height:1">--&deg;C</span>
+                <p id="weather-humidity" style="font-size:12px;color:var(--text-muted);font-weight:700">HUMIDITY: --%</p>
               </div>
             </div>
             <div style="margin-top:10px">
-              <span class="badge badge-warn" style="background:#fef3c7;color:#b45309;font-weight:800">HEAT INDEX HIGH</span>
+              <span id="weather-badge" class="badge badge-warn" style="background:#fef3c7;color:#b45309;font-weight:800;display:none;"></span>
             </div>
           </div>
-          
+
           <!-- Heat stress alerts -->
-          <div class="weather-alert" style="background:rgba(217,119,6,0.1);border-left:4px solid var(--accent);border-radius:8px;padding:12px;font-size:12px;color:var(--warn);display:flex;flex-direction:column;justify-content:center">
+          <div id="weather-alert-box" class="weather-alert" style="background:rgba(217,119,6,0.1);border-left:4px solid var(--accent);border-radius:8px;padding:12px;font-size:12px;color:var(--warn);display:none;flex-direction:column;justify-content:center">
             <div style="display:flex;align-items:center;gap:6px;font-weight:800;margin-bottom:4px">
               <span class="material-symbols-outlined" style="font-size:16px">warning</span>
               HEAT STRESS WARNING
             </div>
-            Temps exceeding 35&deg;C expected between 11 AM - 3 PM. **Action required:** Restrict feeding during peak heat to prevent respiratory failure. Supplement water with Vitamin C.
+            <span id="weather-alert-text"></span>
           </div>
-          
+
           <!-- Outlook -->
           <div style="display:flex;flex-direction:column;justify-content:center">
             <div style="font-size:11px;font-weight:700;color:var(--text-muted);margin-bottom:8px;text-align:center">3-DAY WEATHER OUTLOOK</div>
             <div style="display:grid;grid-template-columns:repeat(3, 1fr);gap:8px;text-align:center">
               <div style="background:rgba(255,255,255,0.5);border-radius:10px;padding:8px">
-                <p style="font-size:10px;font-weight:700;color:var(--text-muted)">TOMORROW</p>
-                <span class="material-symbols-outlined" style="font-size:20px;color:var(--accent-bright)">wb_sunny</span>
-                <p style="font-size:12px;font-weight:800">35&deg;C</p>
+                <p id="forecast-day-1" style="font-size:10px;font-weight:700;color:var(--text-muted)">--</p>
+                <span id="forecast-icon-1" class="material-symbols-outlined" style="font-size:20px;color:var(--accent-bright)">hourglass_empty</span>
+                <p id="forecast-temp-1" style="font-size:12px;font-weight:800">--</p>
               </div>
               <div style="background:rgba(255,255,255,0.5);border-radius:10px;padding:8px">
-                <p style="font-size:10px;font-weight:700;color:var(--text-muted)">THU</p>
-                <span class="material-symbols-outlined" style="font-size:20px;color:var(--accent-bright)">partly_sunny</span>
-                <p style="font-size:12px;font-weight:800">34&deg;C</p>
+                <p id="forecast-day-2" style="font-size:10px;font-weight:700;color:var(--text-muted)">--</p>
+                <span id="forecast-icon-2" class="material-symbols-outlined" style="font-size:20px;color:var(--accent-bright)">hourglass_empty</span>
+                <p id="forecast-temp-2" style="font-size:12px;font-weight:800">--</p>
               </div>
               <div style="background:rgba(255,255,255,0.5);border-radius:10px;padding:8px">
-                <p style="font-size:10px;font-weight:700;color:var(--text-muted)">FRI</p>
-                <span class="material-symbols-outlined" style="font-size:20px;color:var(--sky)">rainy</span>
-                <p style="font-size:12px;font-weight:800">31&deg;C</p>
+                <p id="forecast-day-3" style="font-size:10px;font-weight:700;color:var(--text-muted)">--</p>
+                <span id="forecast-icon-3" class="material-symbols-outlined" style="font-size:20px;color:var(--sky)">hourglass_empty</span>
+                <p id="forecast-temp-3" style="font-size:12px;font-weight:800">--</p>
               </div>
             </div>
           </div>
         </div>
       </div>
-      
+
     </div>
 
     <!-- Row 2: Nutrition Decision Sandbox ( empowers farmers with hard decisions ) -->
@@ -194,7 +198,7 @@
         <span class="badge badge-green" style="font-weight:800">Empowered Decision Override</span>
       </div>
       <p style="font-size:13px;color:var(--text-muted);margin-bottom:20px">Adjust ingredient ratios dynamically below. Test different formulations to override standard ML calculations and finalize feed choices.</p>
-      
+
       <div style="display:grid;grid-template-columns:1fr;gap:1.5rem" class="md:grid-cols-3">
         <!-- Ratios knobs -->
         <div class="space-y-4 md:col-span-2" style="background:var(--surface-muted);padding:1.25rem;border-radius:var(--radius-sm);border:1px solid var(--border-soft)">
@@ -202,32 +206,32 @@
             <label style="font-size:12px;font-weight:800;color:var(--text-sec)">Maize (Energy base) - <span id="maizeVal">56%</span></label>
           </div>
           <input type="range" min="40" max="70" value="56" class="w-full accent-primary" id="maizeRange" oninput="updateOverrideSim()">
-          
+
           <div style="display:flex;justify-content:between">
             <label style="font-size:12px;font-weight:800;color:var(--text-sec)">Soybean Meal (Protein base) - <span id="soyVal">26%</span></label>
           </div>
           <input type="range" min="15" max="38" value="26" class="w-full accent-primary" id="soyRange" oninput="updateOverrideSim()">
-          
+
           <div style="display:flex;justify-content:between">
             <label style="font-size:12px;font-weight:800;color:var(--text-sec)">Fish Meal (Animal protein boost) - <span id="fishVal">6%</span></label>
           </div>
           <input type="range" min="2" max="15" value="6" class="w-full accent-primary" id="fishRange" oninput="updateOverrideSim()">
         </div>
-        
+
         <!-- Live projection results -->
         <div style="background:linear-gradient(135deg, var(--surface) 0%, var(--accent-soft) 100%);border-radius:var(--radius-sm);padding:1.25rem;border:1px dashed var(--accent);display:flex;flex-direction:column;justify-content:center">
           <p style="font-size:11px;font-weight:800;color:var(--text-muted);text-transform:uppercase">Projected Sandbox Impact</p>
-          
+
           <div style="margin-top:12px">
             <p style="font-size:12px;color:var(--text-sec)">Average Bird Weight (W4 Target):</p>
             <p style="font-size:24px;font-weight:800;color:var(--primary)" id="simWeight">1,120 g</p>
           </div>
-          
+
           <div style="margin-top:8px">
             <p style="font-size:12px;color:var(--text-sec)">Estimated Daily Feed Cost (12.4k birds):</p>
             <p style="font-size:20px;font-weight:800;color:var(--accent)" id="simCost">₦828,000</p>
           </div>
-          
+
           <button type="button" class="btn btn-primary btn-sm w-full" style="margin-top:16px" onclick="lockNutritionDecision()">
             <span class="material-symbols-outlined">gavel</span> Lock Nutrition Decision
           </button>
@@ -245,7 +249,7 @@
         <span class="material-symbols-outlined" style="color:var(--primary);font-size:20px">open_in_new</span>
       </div>
       <p style="font-size:12px;color:var(--text-muted);margin-bottom:12px">Average pen weights. Click anywhere on this card to manage all pens.</p>
-      
+
       <div class="tbl-wrap">
         <table>
           <thead>
@@ -259,7 +263,7 @@
         </table>
       </div>
     </div>
-    
+
     <!-- Feed store quantity card -->
     <div class="card data-card" id="stock-card">
       <div class="card-title">Feed in Store</div>
@@ -280,8 +284,10 @@
     <!-- Vaccine Countdown & Alerts Card -->
     <div class="card data-card" id="vaccine-card">
       <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px">
-        <div class="card-title" style="margin-bottom:0;border-bottom:none">Vaccine Countdown</div>
-        <span class="material-symbols-outlined" style="color:var(--accent);font-size:20px">vaccines</span>
+        <div class="card-title" style="margin-bottom:0;border-bottom:none;display:flex;align-items:center;gap:8px">
+          Vaccine Countdown <span class="material-symbols-outlined" style="color:var(--accent);font-size:20px">vaccines</span>
+        </div>
+        <button type="button" class="btn btn-secondary btn-xs" onclick="showAddVaccineModal()" style="padding:2px 8px;font-size:11px;">+ Add Vaccine</button>
       </div>
       <p style="font-size:12px;color:var(--text-muted);margin-bottom:12px">Upcoming schedules. Click "Administer" to log.</p>
       <div id="vaccine-list-container" class="tbl-wrap" style="max-height: 160px; overflow-y: auto;">
@@ -289,7 +295,7 @@
       </div>
     </div>
   </section>
-  
+
   <!-- Upcoming Collaboration Alert banner (Health feature block teaser) -->
   <section class="health-teaser" style="margin-top:1.5rem;background:linear-gradient(135deg, var(--surface) 0%, var(--danger-soft) 100%);border-radius:var(--radius);padding:1.25rem;border:1px solid #ffd8c9;box-shadow:var(--shadow-soft);display:flex;align-items:center;gap:1rem">
     <span class="material-symbols-outlined text-[40px]" style="color:var(--danger)">local_hospital</span>
@@ -520,15 +526,40 @@
     </div>
   </div>
 
+
+  <!-- Float Modal: Add Vaccine -->
+  <div id="add-vaccine-modal" class="card hidden" style="border: 2px solid var(--primary); background: var(--surface); position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); z-index: 1000; width: 90%; max-width: 400px; box-shadow: var(--shadow);">
+    <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid var(--border-soft); padding-bottom: 8px; margin-bottom: 16px;">
+      <h3 style="font-weight: 800; color: var(--primary-strong);">Schedule Vaccine</h3>
+      <button type="button" onclick="closeAddVaccineModal()" class="icon-btn" style="border: none; background: transparent; cursor: pointer;"><span class="material-symbols-outlined">close</span></button>
+    </div>
+
+    <div class="field mb-md"><label>Pen Name</label>
+      <select id="new-vac-pen">
+        <option value="Pen A">Pen A</option>
+        <option value="Pen B">Pen B</option>
+        <option value="Pen C">Pen C</option>
+        <option value="Pen D">Pen D</option>
+      </select>
+    </div>
+    <div class="field mb-md"><label>Vaccine Name</label><input type="text" id="new-vac-name" placeholder="e.g. Fowl Pox Vaccine"></div>
+    <div class="field mb-md"><label>Target Age (days)</label><input type="number" id="new-vac-age" placeholder="e.g. 35"></div>
+
+    <div style="display:flex;gap:12px;justify-content:flex-end;margin-top:16px">
+      <button type="button" class="btn btn-secondary btn-sm" onclick="closeAddVaccineModal()">Cancel</button>
+      <button type="button" class="btn btn-primary btn-sm" onclick="submitAddVaccine()">Schedule</button>
+    </div>
+  </div>
+
   <!-- Float Modal: Edit Pen Details -->
   <div id="edit-pen-modal" class="card hidden" style="border: 2px solid var(--primary); background: var(--surface);">
     <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid var(--border-soft); padding-bottom: 8px; margin-bottom: 16px;">
       <h3 id="edit-pen-title" style="font-weight: 800; color: var(--primary-strong);">Edit Pen Details</h3>
       <button type="button" onclick="closeEditPenModal()" class="icon-btn" style="border: none; background: transparent; cursor: pointer;"><span class="material-symbols-outlined">close</span></button>
     </div>
-    
+
     <input type="hidden" id="edit-pen-original-name">
-    
+
     <div class="grid3 mb-lg">
       <div class="field"><label>Pen name</label><input type="text" id="edit-pen-name"></div>
       <div class="field"><label>Number of birds</label><input type="number" id="edit-pen-count"></div>
@@ -539,7 +570,7 @@
       <div class="field"><label>Current Weight (grams)</label><input type="number" id="edit-pen-weight"></div>
       <div class="field"><label>Target weight (g)</label><input type="number" id="edit-pen-target"></div>
     </div>
-    
+
     <div style="display:flex;gap:12px;flex-wrap:wrap;align-items:center;margin-top:16px">
       <button type="button" class="btn btn-primary btn-sm" onclick="savePenEdits()">Save changes</button>
       <button type="button" class="btn btn-secondary btn-sm" style="border-color: var(--primary); color: var(--primary);" onclick="calculateFeedForActivePen()">
@@ -589,7 +620,7 @@
     <!-- Form Card -->
     <div class="card md:col-span-2" style="background: var(--surface); padding: 1.5rem; border-radius: var(--radius);">
       <div class="card-title">New Daily Performance Record</div>
-      
+
       <!-- Live validation feedback panel -->
       <div id="log-validation-alert" class="alert alert-danger hidden" style="margin-bottom: 1rem; padding: 10px 14px; border-radius: 8px;">
         <div class="alert-icon">!</div>
@@ -659,7 +690,7 @@
     <div class="card md:col-span-1" style="background: var(--surface); padding: 1.5rem; border-radius: var(--radius); border-top: 5px solid var(--accent);">
       <div class="card-title">Live Metrics Calculator</div>
       <p style="font-size: 12px; color: var(--text-sec); margin-bottom: 1.5rem;">Computed instantaneously from your current form inputs.</p>
-      
+
       <div class="stack" style="gap: 1.25rem;">
         <div style="background: var(--primary-soft); padding: 1rem; border-radius: var(--radius-sm); border: 1px solid var(--border-soft);">
           <div style="font-size: 11px; font-weight: 700; color: var(--primary); text-transform: uppercase;">Live Daily FCR</div>
@@ -838,7 +869,7 @@
     <div class="card" style="background: var(--surface); padding: 1.5rem; border-radius: var(--radius);">
       <div class="card-title">Real-Time Risk Alerts Control Room</div>
       <p style="font-size: 12px; color: var(--text-muted); margin-bottom: 1rem;">Algorithmic anomalies detected based on latest feed and weather records.</p>
-      
+
       <div class="stack" id="analytics-alerts-container" style="gap: 12px;">
         <!-- Populated dynamically with alerts -->
         <div class="alert alert-success" style="padding: 10px; border-radius: 8px;">
@@ -924,7 +955,7 @@
     <div class="md:col-span-2 stack" style="gap: 1.5rem;">
       <div class="card" style="background: var(--surface); padding: 1.5rem; border-radius: var(--radius); border-top: 5px solid var(--primary);">
         <div class="card-title">Model Prediction Results</div>
-        
+
         <div class="grid2" style="gap: 1.5rem; margin-top: 1rem; margin-bottom: 1.5rem;">
           <!-- Result Card 1: Estimated weight -->
           <div style="background: var(--primary-soft); border-radius: var(--radius); padding: 1.25rem; border: 1px solid var(--border-soft); text-align: center;">
@@ -973,7 +1004,7 @@
         <p style="font-size: 12px; color: var(--text-muted); margin-bottom: 1.25rem;">
           Shows the relative influence of input variables on the Random Forest weight prediction curve.
         </p>
-        
+
         <div class="stack" style="gap: 12px;">
           <div>
             <div style="display:flex; justify-content:space-between; font-size:11px; font-weight:700; color:var(--text-sec); margin-bottom:4px;">
@@ -1025,6 +1056,81 @@
             </div>
           </div>
         </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<!-- ================= ILLNESS PREDICTOR PAGE ================= -->
+<div id="page-illness" class="page">
+  <div class="dashboard-hero">
+    <h1>Illness Predictor</h1>
+    <p>Select symptoms observed in your birds to get a disease prediction and recommended actions using AI.</p>
+  </div>
+
+  <div class="split-layout">
+    <div class="card form-card">
+      <h3 style="font-weight: 800; color: var(--primary-strong); margin-bottom: 1rem;">Observed Symptoms</h3>
+      <form id="illness-predict-form" onsubmit="event.preventDefault(); runIllnessPrediction();">
+        <div class="field mb-md">
+          <label>Droppings / Feces</label>
+          <select id="illness-droppings">
+            <option value="Normal">Normal (firm with white cap)</option>
+            <option value="Watery">Watery</option>
+            <option value="Bloody">Bloody or reddish</option>
+            <option value="Greenish">Greenish</option>
+            <option value="White paste">White pasty diarrhea</option>
+          </select>
+        </div>
+
+        <div class="field mb-md">
+          <label>Respiratory Signs</label>
+          <select id="illness-respiratory">
+            <option value="Normal">Normal breathing</option>
+            <option value="Coughing/Sneezing">Coughing / Sneezing</option>
+            <option value="Gasping">Gasping for air</option>
+            <option value="Nasal discharge">Nasal discharge</option>
+            <option value="Swollen face">Swollen face / eyes</option>
+          </select>
+        </div>
+
+        <div class="field mb-md">
+          <label>Behavior</label>
+          <select id="illness-behavior">
+            <option value="Normal">Active and eating normally</option>
+            <option value="Lethargic">Lethargic / Huddling together</option>
+            <option value="Loss of appetite">Loss of appetite</option>
+            <option value="Drooping wings">Drooping wings</option>
+            <option value="Paralysis">Paralysis or trembling</option>
+          </select>
+        </div>
+
+        <div class="field mb-md">
+          <label>Physical Appearance</label>
+          <select id="illness-appearance">
+            <option value="Normal">Healthy plumage</option>
+            <option value="Ruffled feathers">Ruffled feathers</option>
+            <option value="Pale comb/wattles">Pale comb or wattles</option>
+            <option value="Lesions/Scabs">Lesions or scabs on skin</option>
+            <option value="Swollen joints">Swollen joints</option>
+          </select>
+        </div>
+
+        <button type="submit" class="btn btn-primary w-full mt-lg">Analyze Symptoms</button>
+      </form>
+    </div>
+
+    <div>
+      <div class="card" id="illness-result-card" style="display: none; border: 2px solid var(--primary); background: var(--surface);">
+        <h3 style="font-weight: 800; color: var(--primary-strong); border-bottom: 2px solid var(--border-soft); padding-bottom: 12px; margin-bottom: 16px;">
+          Prediction Results
+        </h3>
+        <div id="illness-loading" class="hidden" style="text-align: center; padding: 20px;">
+          <div class="spinner"></div>
+          <p style="color: var(--text-muted); font-size: 14px; margin-top: 10px;">Analyzing symptoms with AI...</p>
+        </div>
+        <div id="illness-output" style="white-space: pre-wrap; font-size: 14px; line-height: 1.6; color: var(--text-main);"></div>
       </div>
     </div>
   </div>
